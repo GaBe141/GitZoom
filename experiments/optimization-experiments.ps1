@@ -94,6 +94,9 @@ function Test-SmartCaching {
         $cachedData = Get-Content $cacheFile | ConvertFrom-Json
         # Simulate cache validation (quick check)
         $quickStatus = git status --porcelain | Measure-Object | Select-Object -ExpandProperty Count
+        # Use cached data for faster operations
+        Write-Host "Using cached data from $($cachedData.Timestamp)" -ForegroundColor Gray
+        Write-Host "Quick status shows $quickStatus changes" -ForegroundColor Gray
     }
     
     $stopwatch2.Stop()
