@@ -1,0 +1,17 @@
+# GitZoom
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.tmp
+*.temp
+.env
+.env.local
+dist/
+build/
+coverage/
+.nyc_output/
+.cache/
+.parcel-cache/

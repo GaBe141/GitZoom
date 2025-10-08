@@ -1,0 +1,18 @@
+{
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.suggestSmartCommit": false,
+    "git.postCommitCommand": "push",
+    "git.showPushSuccessNotification": true,
+    "git.enableCommitSigning": false,
+    "git.fetchOnPull": true,
+    "git.pruneOnFetch": true,
+    "git.rebaseWhenSync": true,
+    "git.allowForcePush": false,
+    "git.alwaysSignOff": false,
+    "git.autoRepositoryDetection": true,
+    "git.decorations.enabled": true,
+    "git.enableStatusBarSync": true,
+    "workbench.startupEditor": "welcomePageInEmptyWorkbench"
+}

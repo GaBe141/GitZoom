@@ -1,0 +1,38 @@
+{
+  "name": "gitzoom",
+  "version": "1.0.0",
+  "description": "Lightning-fast Git workflows - From Git-Slow to Git-Go!",
+  "main": "install-gitzoom.ps1",
+  "scripts": {
+    "install": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1",
+    "install-global": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1 -Global",
+    "install-vscode": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1 -VSCode"
+  },
+  "keywords": [
+    "git",
+    "workflow", 
+    "productivity",
+    "vscode",
+    "powershell",
+    "automation",
+    "developer-tools",
+    "speed",
+    "optimization"
+  ],
+  "author": "GaBe141",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GaBe141/GitZoom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GaBe141/GitZoom/issues"
+  },
+  "homepage": "https://github.com/GaBe141/GitZoom#readme",
+  "engines": {
+    "powershell": ">=5.1"
+  },
+  "os": [
+    "win32"
+  ]
+}

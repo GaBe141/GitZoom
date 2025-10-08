@@ -1,0 +1,32 @@
+[
+    {
+        "key": "ctrl+shift+g c",
+        "command": "git.commitStaged",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+g p",
+        "command": "git.push",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+g s",
+        "command": "git.sync",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+g a",
+        "command": "git.stage",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+g u",
+        "command": "git.unstageAll",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+g z",
+        "command": "workbench.view.scm",
+        "when": "!terminalFocus"
+    }
+]
