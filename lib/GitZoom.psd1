@@ -107,7 +107,15 @@ FunctionsToExport = @(
     'Test-GitRepository',
     'Get-GitRepositoryRoot',
     'Format-FileSize',
-    'Format-Duration'
+    'Format-Duration',
+    'Get-DiffStatistics',
+    'Select-MessageTemplate',
+    'Build-CommitMessage',
+    'Get-FileTypeAnalysis',
+    'Format-ConventionalCommit',
+    'Get-CommitScope',
+    'Test-CommitMessage',
+    'Invoke-PreCommitValidation'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

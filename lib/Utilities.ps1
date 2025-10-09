@@ -363,3 +363,546 @@ Export-ModuleMember -Function @(
     "ConvertTo-JsonFormatted",
     "Get-UserGitConfig"
 )
+
+#endregion
+
+#region Commit Helper Functions
+
+<#
+.SYNOPSIS
+    Analyzes diff statistics from git diff output
+    
+.DESCRIPTION
+    Parses git diff output to extract statistics about changes including
+    lines added, deleted, and files modified.
+    
+.PARAMETER DiffOutput
+    Array of git diff output lines
+    
+.EXAMPLE
+    $diff = git diff --stat HEAD
+    $stats = Get-DiffStatistics -DiffOutput $diff
+#>
+function Get-DiffStatistics {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$DiffOutput
+    )
+    
+    $stats = @{
+        LinesAdded = 0
+        LinesDeleted = 0
+        FilesChanged = 0
+        FilesAnalyzed = @()
+    }
+    
+    foreach ($line in $DiffOutput) {
+        # Parse summary line: "X files changed, Y insertions(+), Z deletions(-)"
+        if ($line -match '(\d+) files? changed') {
+            $stats.FilesChanged = [int]$matches[1]
+        }
+        if ($line -match '(\d+) insertion') {
+            $stats.LinesAdded = [int]$matches[1]
+        }
+        if ($line -match '(\d+) deletion') {
+            $stats.LinesDeleted = [int]$matches[1]
+        }
+        
+        # Parse individual file stats
+        if ($line -match '^([^\|]+)\s*\|\s*(\d+)\s*([+-]+)?$') {
+            $stats.FilesAnalyzed += @{
+                Name = $matches[1].Trim()
+                Changes = [int]$matches[2]
+                Visual = if ($matches[3]) { $matches[3] } else { "" }
+            }
+        }
+    }
+    
+    return $stats
+}
+
+<#
+.SYNOPSIS
+    Selects appropriate message template based on analysis
+    
+.DESCRIPTION
+    Determines the best commit message template to use based on
+    staged changes analysis and user preferences.
+    
+.PARAMETER Analysis
+    Hashtable containing analysis of staged changes
+    
+.PARAMETER RequestedTemplate
+    Optional specific template name requested by user
+    
+.PARAMETER Config
+    Configuration object containing available templates
+    
+.EXAMPLE
+    $template = Select-MessageTemplate -Analysis $analysis -Config $config
+#>
+function Select-MessageTemplate {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [hashtable]$Analysis,
+        
+        [string]$RequestedTemplate,
+        
+        [Parameter(Mandatory)]
+        [hashtable]$Config
+    )
+    
+    # If specific template requested, use it
+    if ($RequestedTemplate -and $Config.MessageGeneration.Templates.ContainsKey($RequestedTemplate)) {
+        return $Config.MessageGeneration.Templates[$RequestedTemplate]
+    }
+    
+    # Auto-detect type from analysis
+    $detectedType = "default"
+    
+    if ($Analysis.Type) {
+        $detectedType = $Analysis.Type
+    }
+    
+    # Select based on detected type
+    if ($Config.MessageGeneration.Templates.ContainsKey($detectedType)) {
+        return $Config.MessageGeneration.Templates[$detectedType]
+    }
+    
+    # Fallback to default template
+    return $Config.MessageGeneration.Templates["default"]
+}
+
+<#
+.SYNOPSIS
+    Builds commit message from analysis and template
+    
+.DESCRIPTION
+    Constructs a commit message by filling in template placeholders
+    with information from the staged changes analysis.
+    
+.PARAMETER Analysis
+    Hashtable containing analysis data (type, scope, keywords, etc.)
+    
+.PARAMETER Template
+    Template object with Format and Description
+    
+.PARAMETER Config
+    Configuration object
+    
+.EXAMPLE
+    $message = Build-CommitMessage -Analysis $analysis -Template $template -Config $config
+#>
+function Build-CommitMessage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [hashtable]$Analysis,
+        
+        [Parameter(Mandatory)]
+        $Template,
+        
+        [Parameter(Mandatory)]
+        [hashtable]$Config
+    )
+    
+    $message = $Template.Format
+    
+    # Replace placeholders with actual values
+    if ($Analysis.Type) {
+        $message = $message -replace '\{type\}', $Analysis.Type
+    }
+    
+    if ($Analysis.Scope -and $Analysis.Scope.Count -gt 0) {
+        $scopeStr = $Analysis.Scope -join ', '
+        $message = $message -replace '\{scope\}', $scopeStr
+    }
+    else {
+        # Remove scope placeholder if no scope detected
+        $message = $message -replace '\(?\{scope\}\)?:?\s*', ''
+    }
+    
+    if ($Analysis.Keywords -and $Analysis.Keywords.Count -gt 0) {
+        $keywordsStr = $Analysis.Keywords -join ' '
+        $message = $message -replace '\{keywords\}', $keywordsStr
+    }
+    else {
+        $message = $message -replace '\{keywords\}', 'files'
+    }
+    
+    # Clean up any remaining placeholders
+    $message = $message -replace '\{[^}]+\}', ''
+    
+    return $message.Trim()
+}
+
+<#
+.SYNOPSIS
+    Analyzes file types in staged changes
+    
+.DESCRIPTION
+    Examines staged files to determine predominant file types,
+    directory scopes, and change patterns.
+    
+.PARAMETER Files
+    Array of file information objects from staged changes
+    
+.EXAMPLE
+    $analysis = Get-FileTypeAnalysis -Files $stagedChanges.Files
+#>
+function Get-FileTypeAnalysis {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [array]$Files
+    )
+    
+    $analysis = @{
+        Types = @()
+        Scopes = @()
+        Keywords = @()
+        PrimaryType = $null
+    }
+    
+    if ($Files.Count -eq 0) {
+        return $analysis
+    }
+    
+    # Analyze file extensions
+    $fileGroups = $Files | Group-Object { 
+        $ext = [System.IO.Path]::GetExtension($_.Name)
+        if ($ext) { $ext.TrimStart('.') } else { 'no-extension' }
+    }
+    
+    $analysis.Types = $fileGroups | ForEach-Object { $_.Name }
+    $analysis.PrimaryType = ($fileGroups | Sort-Object Count -Descending | Select-Object -First 1).Name
+    
+    # Determine scopes from paths (directories)
+    $pathParts = $Files | ForEach-Object { 
+        $parts = $_.Name -split '[/\\]'
+        if ($parts.Count -gt 1) { $parts[0] } 
+    } | Where-Object { $_ } | Group-Object | Sort-Object Count -Descending | Select-Object -First 3
+    
+    if ($pathParts) {
+        $analysis.Scopes = $pathParts | ForEach-Object { $_.Name }
+    }
+    
+    # Generate keywords from file names
+    $keywords = $Files | ForEach-Object {
+        $name = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
+        $name -split '[_\-\.]'
+    } | Where-Object { $_ -and $_.Length -gt 2 } | Group-Object | Sort-Object Count -Descending | Select-Object -First 5
+    
+    if ($keywords) {
+        $analysis.Keywords = $keywords | ForEach-Object { $_.Name }
+    }
+    
+    return $analysis
+}
+
+<#
+.SYNOPSIS
+    Formats message according to conventional commits specification
+    
+.DESCRIPTION
+    Converts a regular commit message to conventional commits format,
+    automatically detecting the type and scope where possible.
+    
+.PARAMETER Message
+    The commit message to format
+    
+.PARAMETER StagedChanges
+    Hashtable containing staged changes information
+    
+.EXAMPLE
+    $formatted = Format-ConventionalCommit -Message "updated user auth" -StagedChanges $changes
+#>
+function Format-ConventionalCommit {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Message,
+        
+        [Parameter(Mandatory)]
+        [hashtable]$StagedChanges
+    )
+    
+    # Check if already in conventional format
+    if ($Message -match '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?:\s') {
+        return $Message
+    }
+    
+    # Try to determine type from message content
+    $type = "chore"
+    $messageLower = $Message.ToLower()
+    
+    if ($messageLower -match '\b(add|new|implement|create|feature)\b') { 
+        $type = "feat" 
+    }
+    elseif ($messageLower -match '\b(fix|bug|error|issue|resolve|patch)\b') { 
+        $type = "fix" 
+    }
+    elseif ($messageLower -match '\b(doc|readme|comment|documentation)\b') { 
+        $type = "docs" 
+    }
+    elseif ($messageLower -match '\b(refactor|restructure|reorganize)\b') { 
+        $type = "refactor" 
+    }
+    elseif ($messageLower -match '\b(test|spec|unit|integration)\b') { 
+        $type = "test" 
+    }
+    elseif ($messageLower -match '\b(style|format|lint|prettier)\b') { 
+        $type = "style" 
+    }
+    elseif ($messageLower -match '\b(perf|performance|optimize|speed)\b') { 
+        $type = "perf" 
+    }
+    elseif ($messageLower -match '\b(build|compile|package|deploy)\b') { 
+        $type = "build" 
+    }
+    
+    # Get scope from staged changes
+    $scope = Get-CommitScope -StagedChanges $StagedChanges
+    
+    # Ensure message starts with lowercase (conventional commits style)
+    $Message = $Message.Substring(0, 1).ToLower() + $Message.Substring(1)
+    
+    # Build formatted message
+    if ($scope) {
+        return "$type($scope)`: $Message"
+    }
+    else {
+        return "$type`: $Message"
+    }
+}
+
+<#
+.SYNOPSIS
+    Determines commit scope from staged changes
+    
+.DESCRIPTION
+    Analyzes staged files to determine the most appropriate scope
+    for a conventional commit message.
+    
+.PARAMETER StagedChanges
+    Hashtable containing staged changes information
+    
+.EXAMPLE
+    $scope = Get-CommitScope -StagedChanges $changes
+#>
+function Get-CommitScope {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [hashtable]$StagedChanges
+    )
+    
+    if (-not $StagedChanges.Files -or $StagedChanges.Files.Count -eq 0) {
+        return $null
+    }
+    
+    # Get most common directory/component
+    $dirs = $StagedChanges.Files | ForEach-Object {
+        $parts = $_.Name -split '[/\\]'
+        if ($parts.Count -gt 1) { 
+            $parts[0] 
+        }
+        else { 
+            $null
+        }
+    } | Where-Object { $_ } | Group-Object | Sort-Object Count -Descending | Select-Object -First 1
+    
+    # Only use as scope if it represents majority of changes
+    if ($dirs -and $dirs.Count -gt ($StagedChanges.Files.Count * 0.5)) {
+        return $dirs.Name
+    }
+    
+    # Check for common patterns
+    $allFiles = $StagedChanges.Files.Name -join ' '
+    
+    if ($allFiles -match '\btest') { return 'tests' }
+    if ($allFiles -match '\bdoc') { return 'docs' }
+    if ($allFiles -match '\bconfig') { return 'config' }
+    if ($allFiles -match '\blib|src') { return 'core' }
+    
+    return $null
+}
+
+<#
+.SYNOPSIS
+    Validates commit message quality
+    
+.DESCRIPTION
+    Checks a commit message against best practices and common guidelines,
+    returning validation results with warnings and suggestions.
+    
+.PARAMETER Message
+    The commit message to validate
+    
+.EXAMPLE
+    $validation = Test-CommitMessage -Message "fix: resolve auth bug"
+#>
+function Test-CommitMessage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Message
+    )
+    
+    $validation = @{
+        IsValid = $true
+        Warnings = @()
+        Errors = @()
+        Suggestions = @()
+    }
+    
+    # Check minimum length
+    if ($Message.Length -lt 10) {
+        $validation.Warnings += "Commit message is very short (less than 10 characters)"
+    }
+    
+    # Check maximum length for first line
+    $firstLine = ($Message -split "`n")[0]
+    if ($firstLine.Length -gt 72) {
+        $validation.Warnings += "First line is longer than 72 characters (${firstLine.Length} chars)"
+    }
+    
+    # Check for common placeholders
+    if ($Message -match '^\s*(wip|tmp|temp|test|TODO|FIXME)\s*$') {
+        $validation.Warnings += "Message appears to be a placeholder. Consider using a more descriptive message."
+    }
+    
+    # Check for imperative mood (basic heuristic)
+    if ($Message -match '^\s*(updated|fixed|added|changed|removed|deleted)') {
+        $validation.Suggestions += "Consider using imperative mood: 'update' instead of 'updated', 'fix' instead of 'fixed'"
+    }
+    
+    # Check for trailing period
+    if ($firstLine -match '\.\s*$') {
+        $validation.Suggestions += "Commit message subject should not end with a period"
+    }
+    
+    # Check for all caps
+    if ($Message -cmatch '^[A-Z\s]+$' -and $Message.Length -gt 5) {
+        $validation.Warnings += "Avoid using all caps in commit messages"
+    }
+    
+    # Positive patterns
+    if ($Message -match '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore)\(') {
+        $validation.Suggestions += "Great! Using conventional commits format"
+    }
+    
+    return $validation
+}
+
+<#
+.SYNOPSIS
+    Performs pre-commit validation checks
+    
+.DESCRIPTION
+    Runs various checks on staged changes before allowing a commit,
+    including detecting debug statements, large files, and other issues.
+    
+.PARAMETER StagedChanges
+    Hashtable containing information about staged changes
+    
+.EXAMPLE
+    $preCommit = Invoke-PreCommitValidation -StagedChanges $changes
+#>
+function Invoke-PreCommitValidation {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [hashtable]$StagedChanges
+    )
+    
+    $results = @{
+        BlockingIssues = @()
+        Warnings = @()
+        Info = @()
+    }
+    
+    if (-not $StagedChanges.Files -or $StagedChanges.Files.Count -eq 0) {
+        return $results
+    }
+    
+    foreach ($file in $StagedChanges.Files) {
+        $fileName = $file.Name
+        
+        # Check PowerShell files for debug statements
+        if ($fileName -match '\.(ps1|psm1|psd1)$') {
+            try {
+                $content = git show ":$fileName" 2>$null
+                
+                if ($content -match 'Write-Debug|Set-PSBreakpoint|\$DebugPreference\s*=\s*[''"]Continue') {
+                    $results.Warnings += "Debug statements found in $fileName"
+                }
+                
+                # Check for console.log (in case of mixed JS/PS projects)
+                if ($content -match 'console\.log|debugger;') {
+                    $results.Warnings += "JavaScript debug statements found in $fileName"
+                }
+            }
+            catch {
+                # Silently continue if file can't be read
+            }
+        }
+        
+        # Check for large files
+        if (Test-Path $fileName) {
+            $fileInfo = Get-Item $fileName -ErrorAction SilentlyContinue
+            if ($fileInfo) {
+                $size = $fileInfo.Length
+                
+                if ($size -gt 10MB) {
+                    $sizeMB = [math]::Round($size / 1MB, 2)
+                    $results.BlockingIssues += "Very large file detected: $fileName ($sizeMB MB). Consider Git LFS."
+                }
+                elseif ($size -gt 1MB) {
+                    $sizeMB = [math]::Round($size / 1MB, 2)
+                    $results.Warnings += "Large file detected: $fileName ($sizeMB MB)"
+                }
+            }
+        }
+        
+        # Check for sensitive patterns
+        try {
+            $content = git show ":$fileName" 2>$null
+            
+            if ($content -match 'password\s*=|api[_-]?key\s*=|secret\s*=|token\s*=') {
+                $results.Warnings += "Possible sensitive data in $fileName. Review carefully."
+            }
+        }
+        catch {
+            # Silently continue
+        }
+    }
+    
+    return $results
+}
+
+#endregion
+
+# Export all functions including commit helpers
+Export-ModuleMember -Function @(
+    'Invoke-SafeScriptBlock',
+    'Format-FileSize',
+    'Format-Duration',
+    'Test-GitRepository',
+    'Get-GitRepositoryRoot',
+    'ConvertTo-SafeFileName',
+    'New-GitZoomTempDirectory',
+    'Clear-GitZoomTempDirectories',
+    'ConvertTo-JsonFormatted',
+    'Get-UserGitConfig',
+    'Get-DiffStatistics',
+    'Select-MessageTemplate',
+    'Build-CommitMessage',
+    'Get-FileTypeAnalysis',
+    'Format-ConventionalCommit',
+    'Get-CommitScope',
+    'Test-CommitMessage',
+    'Invoke-PreCommitValidation'
+)
