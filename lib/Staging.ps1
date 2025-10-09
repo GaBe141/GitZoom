@@ -40,8 +40,7 @@ function Invoke-OptimizedStaging {
     param(
         [string[]]$Path,
         [switch]$All,
-        [switch]$Force,
-        [switch]$Batch
+        [switch]$Force
     )
     
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -632,7 +631,8 @@ function Invoke-ParallelStaging {
     )
     
     # For now, fall back to multi-batch staging
-    # TODO: Implement true parallel staging using runspaces
+    # TODO: Implement true parallel staging using runspaces with $MaxJobs workers
+    # MaxJobs parameter reserved for future parallel implementation
     return Invoke-MultiBatchStaging -CategorizedFiles $CategorizedFiles -Force:$Force
 }
 

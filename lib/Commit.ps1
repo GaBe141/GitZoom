@@ -748,7 +748,8 @@ function Invoke-PostCommitOperations {
     )
     
     # Future: Auto-push, notifications, hooks, etc.
-    Write-Verbose "Post-commit operations completed for $CommitHash"
+    # StagedFiles parameter reserved for future use (e.g., selective notifications)
+    Write-Verbose "Post-commit operations completed for $CommitHash with $($StagedFiles.Count) files"
 }
 
 #endregion

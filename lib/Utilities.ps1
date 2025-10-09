@@ -502,10 +502,7 @@ function Build-CommitMessage {
         [hashtable]$Analysis,
         
         [Parameter(Mandatory)]
-        $Template,
-        
-        [Parameter(Mandatory)]
-        [hashtable]$Config
+        $Template
     )
     
     $message = $Template.Format
@@ -846,7 +843,7 @@ function Invoke-PreCommitValidation {
                 }
             }
             catch {
-                # Silently continue if file can't be read
+                Write-Verbose "Could not read file for validation: $fileName - $_"
             }
         }
         
@@ -876,7 +873,7 @@ function Invoke-PreCommitValidation {
             }
         }
         catch {
-            # Silently continue
+            Write-Verbose "Could not check for sensitive data in: $fileName - $_"
         }
     }
     
