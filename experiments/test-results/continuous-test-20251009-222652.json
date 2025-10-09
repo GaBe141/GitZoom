@@ -1,0 +1,892 @@
+{
+  "Mode": "benchmark",
+  "SystemInfo": {
+    "Version": "10.0.26200",
+    "PowerShellVersion": "7.5.3",
+    "ProcessorName": "AMD Ryzen 5 8540U w/ Radeon 740M Graphics      ",
+    "ProcessorCount": 1,
+    "TotalMemory": 15.27,
+    "OS": "Microsoft Windows 11 Home"
+  },
+  "Regressions": [],
+  "Summary": {
+    "TotalTests": 60,
+    "FailedTests": 0,
+    "AverageDuration": 17.93,
+    "TotalMemoryUsed": -812072.0,
+    "PassedTests": 60
+  },
+  "Timestamp": "2025-10-09T22:26:52.637394+02:00",
+  "TestResults": [
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.4603077+02:00",
+      "Duration": 2,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 106880,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.5005151+02:00",
+      "Duration": 39,
+      "CpuTime": 15.625,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 90760,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.534803+02:00",
+      "Duration": 33,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": -5023392,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.5549944+02:00",
+      "Duration": 19,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": 5641632,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.5597147+02:00",
+      "Duration": 4,
+      "CpuTime": 15.625,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 289928,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:31.5781475+02:00",
+      "Duration": 17,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.5799501+02:00",
+      "Duration": 2,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 107480,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.6175341+02:00",
+      "Duration": 37,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 92368,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.651314+02:00",
+      "Duration": 33,
+      "CpuTime": 15.625,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": -5653968,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.6620009+02:00",
+      "Duration": 10,
+      "CpuTime": 0.0,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": 5647144,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.6672854+02:00",
+      "Duration": 4,
+      "CpuTime": 15.625,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 288552,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:33.6839993+02:00",
+      "Duration": 16,
+      "CpuTime": 31.25,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.6857037+02:00",
+      "Duration": 2,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 106904,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.7241065+02:00",
+      "Duration": 37,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 99016,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.7574646+02:00",
+      "Duration": 32,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": -7191672,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.7879312+02:00",
+      "Duration": 30,
+      "CpuTime": 31.25,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": 5640392,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.7929587+02:00",
+      "Duration": 4,
+      "CpuTime": 15.625,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 291752,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:35.8109659+02:00",
+      "Duration": 17,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": -6966528,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.8113407+02:00",
+      "Duration": 6,
+      "CpuTime": 15.625,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 115136,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.8479059+02:00",
+      "Duration": 36,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 99432,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.8829474+02:00",
+      "Duration": 34,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2607024,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.8929121+02:00",
+      "Duration": 9,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2708032,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.8980814+02:00",
+      "Duration": 4,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 289968,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:37.9142052+02:00",
+      "Duration": 15,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:39.9135155+02:00",
+      "Duration": 3,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 106920,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:39.9526151+02:00",
+      "Duration": 38,
+      "CpuTime": 31.25,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 283456,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:39.9866811+02:00",
+      "Duration": 33,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2615248,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:39.9963641+02:00",
+      "Duration": 9,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2648960,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:40.0014079+02:00",
+      "Duration": 4,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 287856,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:40.0184649+02:00",
+      "Duration": 16,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 287840,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.0236814+02:00",
+      "Duration": 3,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 108480,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.0618942+02:00",
+      "Duration": 37,
+      "CpuTime": 31.25,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 98720,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.0989155+02:00",
+      "Duration": 36,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2613528,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.1078294+02:00",
+      "Duration": 8,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2692632,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.1137147+02:00",
+      "Duration": 5,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 282936,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:42.1305316+02:00",
+      "Duration": 16,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.1422939+02:00",
+      "Duration": 3,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 106944,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.1787887+02:00",
+      "Duration": 36,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 90936,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.2124281+02:00",
+      "Duration": 33,
+      "CpuTime": 15.625,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2603096,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.2219986+02:00",
+      "Duration": 9,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2700616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.2280003+02:00",
+      "Duration": 5,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 287856,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:44.2488461+02:00",
+      "Duration": 20,
+      "CpuTime": 15.625,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.2470322+02:00",
+      "Duration": 2,
+      "CpuTime": 31.25,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 98720,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.2854414+02:00",
+      "Duration": 37,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 99192,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.3178307+02:00",
+      "Duration": 31,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2614672,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.3283449+02:00",
+      "Duration": 10,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2693448,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.3340725+02:00",
+      "Duration": 5,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 287736,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:46.3520619+02:00",
+      "Duration": 17,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.3515211+02:00",
+      "Duration": 2,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 100456,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.3889819+02:00",
+      "Duration": 37,
+      "CpuTime": 31.25,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 99432,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.4217741+02:00",
+      "Duration": 32,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2607024,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.4305129+02:00",
+      "Duration": 8,
+      "CpuTime": 0.0,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2695760,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.4362006+02:00",
+      "Duration": 5,
+      "CpuTime": 15.625,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 289120,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:48.4569653+02:00",
+      "Duration": 20,
+      "CpuTime": 0.0,
+      "Result": 32
+    },
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 279616,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.4567442+02:00",
+      "Duration": 2,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 39,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 98720,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.4995241+02:00",
+      "Duration": 42,
+      "CpuTime": 0.0,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/test-results/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 99120,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.5386211+02:00",
+      "Duration": 38,
+      "CpuTime": 0.0,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": -5681488,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.5492832+02:00",
+      "Duration": 10,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": 5641600,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.5544924+02:00",
+      "Duration": 4,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 283520,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:50.5734961+02:00",
+      "Duration": 18,
+      "CpuTime": 31.25,
+      "Result": 32
+    }
+  ]
+}
