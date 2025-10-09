@@ -232,14 +232,16 @@ function ConvertTo-SafeFileName {
     New-GitZoomTempDirectory
 #>
 function New-GitZoomTempDirectory {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param()
     
     $tempBase = Join-Path $env:TEMP "GitZoom"
     $tempDir = Join-Path $tempBase "temp-$(Get-Date -Format 'yyyyMMdd-HHmmss')-$(Get-Random -Minimum 1000 -Maximum 9999)"
     
     if (-not (Test-Path $tempDir)) {
-        New-Item -Path $tempDir -ItemType Directory -Force | Out-Null
+        if ($PSCmdlet.ShouldProcess($tempDir, 'Create temporary directory')) {
+            New-Item -Path $tempDir -ItemType Directory -Force | Out-Null
+        }
     }
     
     return $tempDir
