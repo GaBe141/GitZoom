@@ -17,13 +17,17 @@ test-results/
 *.Tests.xml
 TestResults.xml
 *.trx
+test-data/
+file*.txt
 
 # Logs
 *.log
+logs/
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE files
 .vscode/
@@ -31,17 +35,36 @@ Thumbs.db
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # Temporary files
 *.tmp
 *.temp
 temp/
 tmp/
+.temp/
+.tmp/
+
+# Git files
+.git/
+*.orig
 
 # Environment files
 .env
 .env.local
 .env.*.local
 
-# PowerShell profile
+# PowerShell specific
 $PROFILE
+*.ps1~
+PSScriptAnalyzer-report.xml
+
+# Package files
+*.nupkg
+*.zip
+*.tar.gz
+
+# Performance/Benchmark outputs
+*.perf
+performance-results/
+benchmark-results/

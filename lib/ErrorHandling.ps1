@@ -244,7 +244,7 @@ function Invoke-ErrorRecovery {
     
     try {
         $errorMessage = $ErrorRecord.Exception.Message.ToLower()
-        Write-GitZoomLog -Level "Verbose" -Message "Analyzing error for recovery: $errorMessage"
+        Write-GitZoomLog -Level "Verbose" -Message "Analyzing error for recovery (Operation: $Operation): $errorMessage"
         
         # Repository corruption recovery
         if ($errorMessage -match "index.*corrupt|bad.*index|broken.*index") {
