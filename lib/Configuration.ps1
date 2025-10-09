@@ -434,12 +434,12 @@ function Show-GitZoomConfig {
 
 #endregion
 
-# Export functions
-Export-ModuleMember -Function @(
-    "Get-GitZoomConfig",
-    "Set-GitZoomConfig",
-    "Get-DefaultConfig",
-    "Test-GitZoomConfig", 
-    "Reset-GitZoomConfig",
-    "Show-GitZoomConfig"
-)
+# Export functions (handled by module manifest)
+# Export-ModuleMember -Function @(
+#     "Get-GitZoomConfig",
+#     "Set-GitZoomConfig",
+#     "Get-DefaultConfig",
+#     "Test-GitZoomConfig", 
+#     "Reset-GitZoomConfig",
+#     "Show-GitZoomConfig"
+# )

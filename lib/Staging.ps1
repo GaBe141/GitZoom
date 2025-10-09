@@ -683,12 +683,12 @@ function Invoke-IndividualStaging {
 
 #endregion
 
-# Export functions
-Export-ModuleMember -Function @(
-    "Invoke-OptimizedStaging",
-    "Get-UnstagedFiles",
-    "Get-FilesFromPatterns",
-    "Invoke-FileAnalysis",
-    "Get-StagingStrategy",
-    "Test-BinaryFile"
-)
+# Export functions (handled by module manifest)
+# Export-ModuleMember -Function @(
+#     "Invoke-OptimizedStaging",
+#     "Get-UnstagedFiles",
+#     "Get-FilesFromPatterns",
+#     "Invoke-FileAnalysis",
+#     "Get-StagingStrategy",
+#     "Test-BinaryFile"
+# )

@@ -72,8 +72,8 @@ function Invoke-SmartCommit {
         # Validate commit conditions
         $validation = Test-CommitConditions -StagedChanges $stagedChanges -AllowEmpty:$AllowEmpty
         if (-not $validation.IsValid) {
-            foreach ($error in $validation.Errors) {
-                $results.Errors += $error
+            foreach ($validationError in $validation.Errors) {
+                $results.Errors += $validationError
             }
             return $results
         }
@@ -581,8 +581,8 @@ function Optimize-CommitMessage {
         # Add scope if configured and detected
         if ($optimizationConfig.AddScope -and $StagedChanges.Files.Count -gt 0) {
             $scope = Get-CommitScope -StagedChanges $StagedChanges
-            if ($scope -and -not $optimized.StartsWith("$scope:")) {
-                $optimized = "${scope}: $optimized"
+            if ($scope -and -not $optimized.StartsWith("${scope}:")) {
+                $optimized = "$scope`: $optimized"
             }
         }
         
