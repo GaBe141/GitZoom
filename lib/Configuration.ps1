@@ -203,6 +203,57 @@ function Get-DefaultConfig {
             EnableFileSystemCache = $true
             OptimizeForSSD = $true
         }
+        MessageGeneration = @{
+            Enabled = $true
+            ConventionalCommits = $true
+            AutoDetectType = $true
+            Templates = @{
+                feat = @{
+                    Format = "feat: Add {keywords}"
+                    Description = "New feature implementation"
+                }
+                fix = @{
+                    Format = "fix: Resolve {keywords}"
+                    Description = "Bug fix"
+                }
+                refactor = @{
+                    Format = "refactor: Improve {keywords}"
+                    Description = "Code refactoring"
+                }
+                docs = @{
+                    Format = "docs: Update {keywords}"
+                    Description = "Documentation changes"
+                }
+                test = @{
+                    Format = "test: Add {keywords}"
+                    Description = "Test additions or modifications"
+                }
+                style = @{
+                    Format = "style: Format {keywords}"
+                    Description = "Code style and formatting"
+                }
+                perf = @{
+                    Format = "perf: Optimize {keywords}"
+                    Description = "Performance improvements"
+                }
+                build = @{
+                    Format = "build: Update {keywords}"
+                    Description = "Build system or dependencies"
+                }
+                ci = @{
+                    Format = "ci: Configure {keywords}"
+                    Description = "CI/CD configuration"
+                }
+                chore = @{
+                    Format = "chore: Update {keywords}"
+                    Description = "Maintenance and miscellaneous"
+                }
+                default = @{
+                    Format = "chore: Update {keywords}"
+                    Description = "General updates"
+                }
+            }
+        }
     }
 }
 
