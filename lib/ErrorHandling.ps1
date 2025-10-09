@@ -544,6 +544,7 @@ function Repair-GitIndex {
     Removes Git lock files that prevent operations
 #>
 function Remove-GitLockFiles {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     $recovery = @{ Applied = $false; Description = ""; Actions = @() }
     
     try {
@@ -560,9 +561,11 @@ function Remove-GitLockFiles {
         foreach ($lockPattern in $lockFiles) {
             $files = Get-ChildItem -Path $lockPattern -ErrorAction SilentlyContinue
             foreach ($file in $files) {
-                Remove-Item $file.FullName -Force -ErrorAction SilentlyContinue
-                $recovery.Actions += "Removed lock file: $($file.Name)"
-                $removedCount++
+                if ($PSCmdlet.ShouldProcess($file.FullName, 'Remove Git lock file')) {
+                    Remove-Item $file.FullName -Force -ErrorAction SilentlyContinue
+                    $recovery.Actions += "Removed lock file: $($file.Name)"
+                    $removedCount++
+                }
             }
         }
         

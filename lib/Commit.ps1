@@ -80,7 +80,7 @@ function Invoke-SmartCommit {
         
         # Handle message generation/optimization
         if ($AutoGenerate -or -not $Message) {
-            $generatedMessage = New-CommitMessage -StagedChanges $stagedChanges -Template $Template
+            $generatedMessage = Get-CommitMessage -StagedChanges $stagedChanges -Template $Template
             if ($generatedMessage) {
                 $Message = $generatedMessage
             }
@@ -344,9 +344,9 @@ function Test-CommitConditions {
     Template to use for message generation
     
 .EXAMPLE
-    New-CommitMessage -StagedChanges $changes -Template "feature"
+    Get-CommitMessage -StagedChanges $changes -Template "feature"
 #>
-function New-CommitMessage {
+function Get-CommitMessage {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -369,10 +369,10 @@ function New-CommitMessage {
         $analysis = Invoke-ChangeAnalysis -StagedChanges $StagedChanges
         
         # Select appropriate template
-        $selectedTemplate = Select-MessageTemplate -Analysis $analysis -RequestedTemplate $Template -Config $messageConfig
+    $selectedTemplate = Select-MessageTemplate -Analysis $analysis -RequestedTemplate $Template -Config $messageConfig
         
         # Generate message based on analysis and template
-        $message = Build-CommitMessage -Analysis $analysis -Template $selectedTemplate -Config $messageConfig
+    $message = Build-CommitMessage -Analysis $analysis -Template $selectedTemplate -Config $messageConfig
         
         Write-Verbose "Generated commit message: $message"
         return $message
@@ -759,6 +759,6 @@ Export-ModuleMember -Function @(
     "Invoke-SmartCommit",
     "Get-StagedChanges",
     "Test-CommitConditions",
-    "New-CommitMessage",
+    "Get-CommitMessage",
     "Optimize-CommitMessage"
 )
