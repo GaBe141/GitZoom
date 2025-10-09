@@ -545,6 +545,8 @@ function Repair-GitIndex {
 #>
 function Remove-GitLockFiles {
     [CmdletBinding(SupportsShouldProcess=$true)]
+    param()
+    
     $recovery = @{ Applied = $false; Description = ""; Actions = @() }
     
     try {
