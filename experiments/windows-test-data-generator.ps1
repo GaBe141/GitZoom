@@ -57,7 +57,7 @@ function New-TestFile {
     }
 }
 
-function Generate-WindowsPathScenarios {
+function New-WindowsPathScenarios {
     Write-Host "📁 Generating Windows Path Scenarios..." -ForegroundColor Cyan
     
     $pathTests = @(
@@ -113,7 +113,7 @@ function Generate-WindowsPathScenarios {
     }
 }
 
-function Generate-WindowsFileAttributes {
+function New-WindowsFileAttributes {
     Write-Host "🏷️ Generating Windows File Attribute Tests..." -ForegroundColor Cyan
     
     $attributeTests = @(
@@ -158,7 +158,7 @@ function Generate-WindowsFileAttributes {
     }
 }
 
-function Generate-NTFSFeatures {
+function New-NTFSFeatures {
     Write-Host "💾 Generating NTFS Feature Tests..." -ForegroundColor Cyan
     
     try {
@@ -196,7 +196,7 @@ function Generate-NTFSFeatures {
         
         try {
             # Create hard link using fsutil
-            $result = cmd.exe /c "fsutil hardlink create `"$hardLinkFile`" `"$originalFile`"" 2>$null
+            cmd.exe /c "fsutil hardlink create `"$hardLinkFile`" `"$originalFile`"" 2>$null | Out-Null
             if (Test-Path $hardLinkFile) {
                 Write-Host "✅ Created NTFS hard link" -ForegroundColor Green
             }
@@ -211,7 +211,7 @@ function Generate-NTFSFeatures {
     }
 }
 
-function Generate-GitLineEndingScenarios {
+function New-GitLineEndingScenarios {
     Write-Host "🔄 Generating Git Line Ending Scenarios..." -ForegroundColor Cyan
     
     $lineEndingTests = @(
@@ -259,7 +259,7 @@ mixed-endings.txt text eol=crlf
     Write-Host "✅ Created .gitattributes for line ending tests" -ForegroundColor Green
 }
 
-function Generate-LargeFileScenarios {
+function New-LargeFileScenarios {
     Write-Host "📏 Generating Large File Scenarios..." -ForegroundColor Cyan
     
     $largePath = "$OutputPath/large-files"
@@ -303,7 +303,7 @@ function Generate-LargeFileScenarios {
     }
 }
 
-function Generate-PerformanceTestData {
+function New-PerformanceTestData {
     Write-Host "⚡ Generating Performance Test Data..." -ForegroundColor Cyan
     
     $perfPath = "$OutputPath/performance"
@@ -346,7 +346,7 @@ module.exports = performanceTest$_;
     Write-Host "✅ Created $($currentScale.FileCount) performance test files" -ForegroundColor Green
 }
 
-function Generate-EdgeCaseScenarios {
+function New-EdgeCaseScenarios {
     if (-not $IncludeEdgeCases) { return }
     
     Write-Host "⚠️ Generating Edge Case Scenarios..." -ForegroundColor Cyan
@@ -378,7 +378,7 @@ function Generate-EdgeCaseScenarios {
     Write-Host "✅ Created edge case scenarios" -ForegroundColor Green
 }
 
-function Generate-TestReport {
+function New-TestReport {
     Write-Host "📊 Generating Test Data Report..." -ForegroundColor Cyan
     
     $report = @{
@@ -434,19 +434,19 @@ Write-Host ""
 
 # Generate scenarios based on parameters
 switch ($ScenarioType.ToLower()) {
-    "paths" { Generate-WindowsPathScenarios }
-    "attributes" { Generate-WindowsFileAttributes }
-    "ntfs" { Generate-NTFSFeatures }
-    "git" { Generate-GitLineEndingScenarios }
-    "large" { Generate-LargeFileScenarios }
-    "performance" { Generate-PerformanceTestData }
+    "paths" { New-WindowsPathScenarios }
+    "attributes" { New-WindowsFileAttributes }
+    "ntfs" { New-NTFSFeatures }
+    "git" { New-GitLineEndingScenarios }
+    "large" { New-LargeFileScenarios }
+    "performance" { New-PerformanceTestData }
     "all" {
-        Generate-WindowsPathScenarios
-        Generate-WindowsFileAttributes
-        Generate-NTFSFeatures
-        Generate-GitLineEndingScenarios
-        Generate-LargeFileScenarios
-        Generate-PerformanceTestData
+        New-WindowsPathScenarios
+        New-WindowsFileAttributes
+        New-NTFSFeatures
+        New-GitLineEndingScenarios
+        New-LargeFileScenarios
+        New-PerformanceTestData
     }
     default {
         Write-Host "Unknown scenario type: $ScenarioType" -ForegroundColor Red
@@ -456,10 +456,10 @@ switch ($ScenarioType.ToLower()) {
 }
 
 if ($IncludeEdgeCases) {
-    Generate-EdgeCaseScenarios
+    New-EdgeCaseScenarios
 }
 
-Generate-TestReport
+New-TestReport
 
 Write-Host ""
 Write-Host "🎉 Windows Test Data Generation Complete!" -ForegroundColor Magenta

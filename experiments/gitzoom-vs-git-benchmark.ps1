@@ -166,7 +166,7 @@ function Compare-Operations {
     }
 }
 
-function Setup-TestEnvironment {
+function Initialize-TestEnvironment {
     Write-Host "🔧 Setting up test environment..." -ForegroundColor Cyan
     
     # Ensure we have a clean test area
@@ -186,7 +186,7 @@ function Setup-TestEnvironment {
     Write-Host "✅ Test environment ready" -ForegroundColor Green
 }
 
-function Generate-TestData {
+function New-TestData {
     Write-Host "📁 Generating test data ($TestDataSize scale)..." -ForegroundColor Cyan
     
     # Create test files
@@ -358,7 +358,7 @@ function Test-FileSystemScanPerformance {
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "File System Scan"
 }
 
-function Generate-ComparisonReport {
+function New-ComparisonReport {
     Write-Host ""
     Write-Host "📊 Generating Performance Comparison Report..." -ForegroundColor Cyan
     
@@ -366,7 +366,7 @@ function Generate-ComparisonReport {
     $global:TestMetrics.TotalDuration = ($global:TestMetrics.EndTime - $global:TestMetrics.StartTime).TotalSeconds
     
     # Calculate overall performance improvement
-    $validComparisons = $global:ComparisonResults | Where-Object { $_.SpeedupPercentage -ne $null }
+    $validComparisons = $global:ComparisonResults | Where-Object { $null -ne $_.SpeedupPercentage }
     if ($validComparisons.Count -gt 0) {
         $global:TestMetrics.AverageSpeedupPercentage = [math]::Round(($validComparisons | Measure-Object -Property SpeedupPercentage -Average).Average, 2)
     }
@@ -426,7 +426,7 @@ function Generate-ComparisonReport {
     return $report
 }
 
-function Create-VisualComparison {
+function New-VisualComparison {
     if (-not $CreateVisualComparison) { return }
     
     Write-Host "📈 Creating visual comparison chart..." -ForegroundColor Cyan
@@ -452,7 +452,7 @@ $($result.TestName):
     Write-Host "📊 Visual chart saved: $chartFile" -ForegroundColor Green
 }
 
-function Cleanup-TestEnvironment {
+function Remove-TestEnvironment {
     Write-Host "🧹 Cleaning up test environment..." -ForegroundColor Cyan
     Set-Location ..
     
@@ -469,8 +469,8 @@ Write-Host "Test Scale: $TestDataSize | Iterations: $Iterations" -ForegroundColo
 Write-Host ""
 
 try {
-    Setup-TestEnvironment
-    Generate-TestData
+    Initialize-TestEnvironment
+    New-TestData
     
     # Run all performance tests
     Test-AddAndCommitPerformance
@@ -481,10 +481,10 @@ try {
     Test-FileSystemScanPerformance
     
     # Generate comprehensive report
-    $report = Generate-ComparisonReport
+    $report = New-ComparisonReport
     
     if ($CreateVisualComparison) {
-        Create-VisualComparison
+        New-VisualComparison
     }
     
     Write-Host ""
@@ -495,7 +495,7 @@ try {
     }
 }
 finally {
-    Cleanup-TestEnvironment
+    Remove-TestEnvironment
 }
 
 Write-Host ""

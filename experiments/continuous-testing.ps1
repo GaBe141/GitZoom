@@ -128,7 +128,7 @@ function Measure-GitZoomOperation {
     }
 }
 
-function Run-CorePerformanceTests {
+function Invoke-CorePerformanceTests {
     Write-Host "🧪 Running core performance tests..." -ForegroundColor Cyan
     
     $testResults = @()
@@ -176,7 +176,7 @@ function Run-CorePerformanceTests {
     return $testResults
 }
 
-function Analyze-PerformanceRegression {
+function Test-PerformanceRegression {
     param([array]$CurrentResults)
     
     if (-not $global:BaselineMetrics -or -not $global:BaselineMetrics.Operations) {
@@ -325,8 +325,8 @@ function Start-WatchMode {
     
     while ($global:IsRunning) {
         try {
-            $testResults = Run-CorePerformanceTests
-            $regressions = Analyze-PerformanceRegression -CurrentResults $testResults
+            $testResults = Invoke-CorePerformanceTests
+            $regressions = Test-PerformanceRegression -CurrentResults $testResults
             
             Save-TestResults -TestResults $testResults -Regressions $regressions
             Show-RealTimeMetrics -TestResults $testResults
@@ -353,7 +353,7 @@ function Start-BenchmarkMode {
     
     for ($i = 1; $i -le $iterations; $i++) {
         Write-Host "Benchmark iteration $i/$iterations" -ForegroundColor Cyan
-        $testResults = Run-CorePerformanceTests
+        $testResults = Invoke-CorePerformanceTests
         $allResults += $testResults
         
         Start-Sleep -Seconds 2 # Brief pause between iterations
@@ -397,8 +397,8 @@ switch ($Mode.ToLower()) {
     }
     "single" {
         Write-Host "🎯 Running single test cycle..." -ForegroundColor Green
-        $testResults = Run-CorePerformanceTests
-        $regressions = Analyze-PerformanceRegression -CurrentResults $testResults
+        $testResults = Invoke-CorePerformanceTests
+        $regressions = Test-PerformanceRegression -CurrentResults $testResults
         Save-TestResults -TestResults $testResults -Regressions $regressions
         Show-RealTimeMetrics -TestResults $testResults
     }
@@ -407,8 +407,8 @@ switch ($Mode.ToLower()) {
     }
     "regression" {
         Write-Host "🔍 Running regression test..." -ForegroundColor Green
-        $testResults = Run-CorePerformanceTests
-        $regressions = Analyze-PerformanceRegression -CurrentResults $testResults
+        $testResults = Invoke-CorePerformanceTests
+        $regressions = Test-PerformanceRegression -CurrentResults $testResults
         
         if ($regressions.Count -gt 0) {
             Write-Host "❌ Regression test FAILED - $($regressions.Count) regression(s) detected" -ForegroundColor Red
