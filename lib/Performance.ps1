@@ -55,7 +55,7 @@ function Measure-GitZoomOperation {
     }
     catch {
         $errorMessage = $_.Exception.Message
-        Write-Verbose "Error in $Name: $errorMessage"
+        Write-Verbose "Error in ${Name}: $errorMessage"
     }
     finally {
         $stopwatch.Stop()
@@ -323,12 +323,12 @@ function Set-GitOptimizations {
 
 #endregion
 
-# Export functions
-Export-ModuleMember -Function @(
-    "Measure-GitZoomOperation",
-    "Add-PerformanceMetric", 
-    "Initialize-PerformanceTracking",
-    "Compare-PerformanceGain",
-    "Get-PerformanceStats",
-    "Set-GitOptimizations"
-)
+# Export functions (handled by module manifest)
+# Export-ModuleMember -Function @(
+#     "Measure-GitZoomOperation",
+#     "Add-PerformanceMetric", 
+#     "Initialize-PerformanceTracking",
+#     "Compare-PerformanceGain",
+#     "Get-PerformanceStats",
+#     "Set-GitOptimizations"
+# )
