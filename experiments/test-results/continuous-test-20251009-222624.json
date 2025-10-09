@@ -1,0 +1,108 @@
+{
+  "Mode": "single",
+  "SystemInfo": {
+    "Version": "10.0.26200",
+    "PowerShellVersion": "7.5.3",
+    "ProcessorName": "AMD Ryzen 5 8540U w/ Radeon 740M Graphics      ",
+    "ProcessorCount": 1,
+    "TotalMemory": 15.27,
+    "OS": "Microsoft Windows 11 Home"
+  },
+  "Regressions": null,
+  "Summary": {
+    "TotalTests": 6,
+    "FailedTests": 0,
+    "AverageDuration": 43.83,
+    "TotalMemoryUsed": 1877920.0,
+    "PassedTests": 6
+  },
+  "Timestamp": "2025-10-09T22:26:24.4011306+02:00",
+  "TestResults": [
+    {
+      "Operation": "File System Scan",
+      "MemoryUsed": 320736,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.1460153+02:00",
+      "Duration": 21,
+      "CpuTime": 0.0,
+      "Result": {
+        "Count": 38,
+        "Average": null,
+        "Sum": null,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "Git Status",
+      "MemoryUsed": 165728,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.2176368+02:00",
+      "Duration": 69,
+      "CpuTime": 31.25,
+      "Result": [
+        "?? experiments/continuous-testing.ps1",
+        "?? experiments/test-data/",
+        "?? experiments/windows-advanced-testing.ps1",
+        "?? experiments/windows-test-data-generator.ps1"
+      ]
+    },
+    {
+      "Operation": "Git Log",
+      "MemoryUsed": 123264,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.2666797+02:00",
+      "Duration": 48,
+      "CpuTime": 15.625,
+      "Result": [
+        "b1e4757 Clean up repository: Remove 1020 test files (file1.txt-file999.txt, test1.txt-test20.txt)",
+        "874cc79 chore: add generated test files and optimization scripts (bulk)",
+        "bd5eb01 docs: Fix markdown linting issues and add production deployment guides",
+        "5f7a26f test: lightning push benchmark",
+        "72623f1 ­ƒÜÇ PRODUCTION: Deploy optimized GitZoom with 80%+ performance improvements",
+        "a4d2784 test: enhanced lightning push with batch operations",
+        "5c96387 test: lightning push benchmark",
+        "f5e339d docs: add GitHub repository setup guide",
+        "c700f0a docs: add comprehensive project summary",
+        "bf38741 feat: initial GitZoom project - lightning-fast Git workflows"
+      ]
+    },
+    {
+      "Operation": "Memory Allocation Test",
+      "MemoryUsed": 2951744,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.310786+02:00",
+      "Duration": 43,
+      "CpuTime": 15.625,
+      "Result": 1000
+    },
+    {
+      "Operation": "PowerShell Pipeline",
+      "MemoryUsed": -2238424,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.3568506+02:00",
+      "Duration": 45,
+      "CpuTime": 46.875,
+      "Result": {
+        "Count": 500,
+        "Average": null,
+        "Sum": 750500.0,
+        "Maximum": null,
+        "Minimum": null,
+        "StandardDeviation": null,
+        "Property": null
+      }
+    },
+    {
+      "Operation": "File I/O Operations",
+      "MemoryUsed": 554872,
+      "Success": true,
+      "Timestamp": "2025-10-09T22:26:24.3952868+02:00",
+      "Duration": 37,
+      "CpuTime": 0.0,
+      "Result": 32
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "Scale": "small",
+  "Statistics": {
+    "TotalFiles": 15,
+    "TotalDirectories": 3,
+    "TotalSize": 0.12
+  },
+  "ScenarioType": "performance",
+  "CreatedScenarios": [
+    "Performance test data",
+    "Edge case scenarios"
+  ],
+  "IncludedEdgeCases": true,
+  "GeneratedAt": "2025-10-09T22:25:31.7381564+02:00",
+  "Configuration": {
+    "RepoDepth": 3,
+    "FileCount": 10,
+    "FileSize": 1024
+  }
+}
