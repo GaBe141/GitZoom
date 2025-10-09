@@ -1,0 +1,89 @@
+[
+  {
+    "Operation": "Stage Small Files",
+    "Duration": 71,
+    "Success": true,
+    "TestData": "10 files, ~100 bytes each",
+    "Timestamp": "2025-10-09T23:33:16.2872991+02:00"
+  },
+  [
+    "[main 69bc1c9] test: add small test files",
+    " 10 files changed, 30 insertions(+)",
+    " create mode 100644 test-data/small-file-1.txt",
+    " create mode 100644 test-data/small-file-10.txt",
+    " create mode 100644 test-data/small-file-2.txt",
+    " create mode 100644 test-data/small-file-3.txt",
+    " create mode 100644 test-data/small-file-4.txt",
+    " create mode 100644 test-data/small-file-5.txt",
+    " create mode 100644 test-data/small-file-6.txt",
+    " create mode 100644 test-data/small-file-7.txt",
+    " create mode 100644 test-data/small-file-8.txt",
+    " create mode 100644 test-data/small-file-9.txt",
+    {
+      "Operation": "Commit Small Files",
+      "Duration": 70,
+      "Success": true,
+      "TestData": "10 files committed",
+      "Timestamp": "2025-10-09T23:33:16.361626+02:00"
+    }
+  ],
+  {
+    "Operation": "Stage Large File",
+    "Duration": 59,
+    "Success": true,
+    "TestData": "1MB file",
+    "Timestamp": "2025-10-09T23:33:16.430641+02:00"
+  },
+  [
+    "[main be93e93] test: add large test file",
+    " 1 file changed, 1 insertion(+)",
+    " create mode 100644 test-data/large-file.txt",
+    {
+      "Operation": "Commit Large File",
+      "Duration": 74,
+      "Success": true,
+      "TestData": "1MB file committed",
+      "Timestamp": "2025-10-09T23:33:16.5058601+02:00"
+    }
+  ],
+  "[main 2e3db73] test: lightning push benchmark",
+  " 1 file changed, 1 insertion(+), 1 deletion(-)",
+  {
+    "Operation": "GitZoom Lightning Push",
+    "Duration": 2160,
+    "Success": true,
+    "TestData": "Single file change",
+    "Timestamp": "2025-10-09T23:33:18.6703737+02:00"
+  },
+  {
+    "Operation": "Git Fetch",
+    "Duration": 529,
+    "Success": true,
+    "TestData": "Fetch from remote",
+    "Timestamp": "2025-10-09T23:33:19.2024258+02:00"
+  },
+  {
+    "Operation": "Git Push",
+    "Duration": 906,
+    "Success": true,
+    "TestData": "Push to remote",
+    "Timestamp": "2025-10-09T23:33:20.1100635+02:00"
+  },
+  {
+    "Operation": "File Save Simulation",
+    "Duration": 17,
+    "Success": true,
+    "TestData": "VS Code file save",
+    "Timestamp": "2025-10-09T23:33:20.1294863+02:00"
+  },
+  [
+    "?? test-data/vscode-test.js",
+    {
+      "Operation": "Git Status Check",
+      "Duration": 44,
+      "Success": true,
+      "TestData": "Status for VS Code git panel",
+      "Timestamp": "2025-10-09T23:33:20.1748771+02:00"
+    }
+  ]
+]
