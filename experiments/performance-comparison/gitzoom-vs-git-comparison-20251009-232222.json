@@ -1,0 +1,551 @@
+{
+  "OverallResults": {
+    "AverageSpeedupPercentage": -64.32,
+    "GitZoomWinRate": 66.67,
+    "GitZoomWins": 4,
+    "TotalTests": 6,
+    "StandardGitWins": 2
+  },
+  "SystemInfo": {
+    "ProcessorName": "AMD Ryzen 5 8540U w/ Radeon 740M Graphics      ",
+    "PowerShellVersion": "7.5.3",
+    "TotalMemory": 15.27,
+    "OS": "Microsoft Windows 11 Home"
+  },
+  "DetailedResults": [
+    {
+      "TestName": "Add and Commit",
+      "GitZoom": {
+        "StandardDeviation": 0.82,
+        "Success": true,
+        "MaxDuration": 46.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 44.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": null,
+            "Duration": 46,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 45,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 44,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom Lightning Commit",
+        "AverageDuration": 45.0
+      },
+      "StandardGit": {
+        "StandardDeviation": 2.62,
+        "Success": true,
+        "MaxDuration": 83.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 77.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 77,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 83,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 82,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard Git Add + Commit",
+        "AverageDuration": 80.67
+      },
+      "SpeedupPercentage": 44.22,
+      "Winner": "GitZoom",
+      "Timestamp": "2025-10-09T23:22:14.4352878+02:00",
+      "SpeedupFactor": 1.79
+    },
+    {
+      "TestName": "Status Check",
+      "GitZoom": {
+        "StandardDeviation": 2.49,
+        "Success": true,
+        "MaxDuration": 42.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 36.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 36,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 38,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 42,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom Status Check",
+        "AverageDuration": 38.67
+      },
+      "StandardGit": {
+        "StandardDeviation": 1.63,
+        "Success": true,
+        "MaxDuration": 41.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 37.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 39,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 41,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              " M test-file-1.js",
+              " M test-file-2.js",
+              " M test-file-3.js",
+              " M test-file-4.js",
+              " M test-file-5.js"
+            ],
+            "Duration": 37,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard Git Status",
+        "AverageDuration": 39.0
+      },
+      "SpeedupPercentage": 0.85,
+      "Winner": "GitZoom",
+      "Timestamp": "2025-10-09T23:22:15.468483+02:00",
+      "SpeedupFactor": 1.01
+    },
+    {
+      "TestName": "Multi-File Commit",
+      "GitZoom": {
+        "StandardDeviation": 3.86,
+        "Success": true,
+        "MaxDuration": 49.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 40.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": null,
+            "Duration": 42,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 40,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 49,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom Bulk Commit",
+        "AverageDuration": 43.67
+      },
+      "StandardGit": {
+        "StandardDeviation": 2.49,
+        "Success": true,
+        "MaxDuration": 89.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 83.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 83,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 89,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              "On branch master",
+              "nothing to commit, working tree clean"
+            ],
+            "Duration": 85,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard Git Bulk Commit",
+        "AverageDuration": 85.67
+      },
+      "SpeedupPercentage": 49.03,
+      "Winner": "GitZoom",
+      "Timestamp": "2025-10-09T23:22:17.2567455+02:00",
+      "SpeedupFactor": 1.96
+    },
+    {
+      "TestName": "Log and History",
+      "GitZoom": {
+        "StandardDeviation": 0.47,
+        "Success": true,
+        "MaxDuration": 35.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 34.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 34,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 34,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 35,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom Log Check",
+        "AverageDuration": 34.33
+      },
+      "StandardGit": {
+        "StandardDeviation": 0.47,
+        "Success": true,
+        "MaxDuration": 35.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 34.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 34,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 35,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": [
+              "7e43bf4 Standard bulk commit test",
+              "172e96b Standard git test commit",
+              "9be7a16 GitZoom test commit"
+            ],
+            "Duration": 35,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard Git Log",
+        "AverageDuration": 34.67
+      },
+      "SpeedupPercentage": 0.98,
+      "Winner": "GitZoom",
+      "Timestamp": "2025-10-09T23:22:18.6863194+02:00",
+      "SpeedupFactor": 1.01
+    },
+    {
+      "TestName": "Branch Operations",
+      "GitZoom": {
+        "StandardDeviation": 2.62,
+        "Success": true,
+        "MaxDuration": 105.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 99.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": null,
+            "Duration": 99,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 104,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 105,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom Branch Operations",
+        "AverageDuration": 102.67
+      },
+      "StandardGit": {
+        "StandardDeviation": 1.89,
+        "Success": true,
+        "MaxDuration": 102.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 98.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": null,
+            "Duration": 98,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 102,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": null,
+            "Duration": 102,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard Branch Operations",
+        "AverageDuration": 100.67
+      },
+      "SpeedupPercentage": -1.99,
+      "Winner": "Standard Git",
+      "Timestamp": "2025-10-09T23:22:20.2665084+02:00",
+      "SpeedupFactor": 0.98
+    },
+    {
+      "TestName": "File System Scan",
+      "GitZoom": {
+        "StandardDeviation": 8.73,
+        "Success": true,
+        "MaxDuration": 22.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 3.0,
+        "Tool": "GitZoom",
+        "Measurements": [
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 4,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 22,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 3,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "GitZoom File Scan",
+        "AverageDuration": 9.67
+      },
+      "StandardGit": {
+        "StandardDeviation": 0.47,
+        "Success": true,
+        "MaxDuration": 2.0,
+        "SuccessRate": 100.0,
+        "MinDuration": 1.0,
+        "Tool": "Standard Git",
+        "Measurements": [
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 1,
+            "Iteration": 1,
+            "Success": true
+          },
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 2,
+            "Iteration": 2,
+            "Success": true
+          },
+          {
+            "Result": {
+              "Count": 60,
+              "Average": null,
+              "Sum": null,
+              "Maximum": null,
+              "Minimum": null,
+              "StandardDeviation": null,
+              "Property": null
+            },
+            "Duration": 2,
+            "Iteration": 3,
+            "Success": true
+          }
+        ],
+        "Operation": "Standard File Scan",
+        "AverageDuration": 1.67
+      },
+      "SpeedupPercentage": -479.04,
+      "Winner": "Standard Git",
+      "Timestamp": "2025-10-09T23:22:21.0446794+02:00",
+      "SpeedupFactor": 0.17
+    }
+  ],
+  "TestRun": {
+    "Iterations": 3,
+    "Timestamp": "2025-10-09T23:22:12.0703287+02:00",
+    "Duration": 8.9813743,
+    "TestDataSize": "medium"
+  }
+}

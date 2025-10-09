@@ -1,0 +1,30 @@
+Add and Commit:
+  GitZoom:    █████████ 45ms
+  Standard:   ████████████████ 80.67ms
+  Improvement: 44.22%
+
+Status Check:
+  GitZoom:    ████████ 38.67ms
+  Standard:   ████████ 39ms
+  Improvement: 0.85%
+
+Multi-File Commit:
+  GitZoom:    █████████ 43.67ms
+  Standard:   █████████████████ 85.67ms
+  Improvement: 49.03%
+
+Log and History:
+  GitZoom:    ███████ 34.33ms
+  Standard:   ███████ 34.67ms
+  Improvement: 0.98%
+
+Branch Operations:
+  GitZoom:    █████████████████████ 102.67ms
+  Standard:   ████████████████████ 100.67ms
+  Improvement: -1.99%
+
+File System Scan:
+  GitZoom:    ██ 9.67ms
+  Standard:    1.67ms
+  Improvement: -479.04%
+
