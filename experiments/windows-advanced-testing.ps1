@@ -159,7 +159,7 @@ function Test-WindowsGitIntegration {
     # Test Windows credential manager integration
     Measure-WindowsOperation "Git Credential Manager" {
         $result = git config --get credential.helper
-        return $result -ne $null
+        return $null -ne $result
     } @{ Type = "Git"; Feature = "CredentialManager" }
     
     # Test Windows line ending handling
@@ -282,8 +282,6 @@ function Test-WindowsAdvancedScenarios {
     # Test Windows Service integration scenario
     Measure-WindowsOperation "Windows Service Simulation" {
         # Simulate operations that would run from a Windows service
-        $serviceName = "GitZoom-Service-Test"
-        
         # Check if we can query services (requires appropriate permissions)
         $services = Get-Service | Where-Object { $_.Status -eq "Running" } | Select-Object -First 5
         
@@ -293,13 +291,11 @@ function Test-WindowsAdvancedScenarios {
     # Test Windows Task Scheduler integration
     Measure-WindowsOperation "Task Scheduler Simulation" {
         # Simulate scheduled task operations
-        $taskName = "GitZoom-Scheduled-Test"
-        
         # Create a simple scheduled task definition (without actually scheduling)
         $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Command 'Write-Host Test'"
         $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(60)
         
-        return ($action -ne $null -and $trigger -ne $null)
+        return ($null -ne $action -and $null -ne $trigger)
     } @{ Type = "Advanced"; Feature = "TaskScheduler" }
     
     # Test Windows Registry operations
@@ -366,7 +362,7 @@ function Test-WindowsErrorHandling {
     } @{ Type = "ErrorHandling"; Feature = "NetworkPath" } -ExpectFailure
 }
 
-function Generate-DetailedReport {
+function New-DetailedReport {
     Write-TestHeader "Generating Detailed Report"
     
     $global:TestMetrics.EndTime = Get-Date
@@ -434,7 +430,7 @@ switch ($TestSuite.ToLower()) {
 }
 
 if ($GenerateDetailedReport) {
-    Generate-DetailedReport
+    New-DetailedReport
 }
 
 Write-Host ""
