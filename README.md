@@ -19,14 +19,16 @@ iwr -useb https://raw.githubusercontent.com/GaBe141/GitZoom/main/install-gitzoom
 ### Instant Speed Boost
 ```bash
 # Before GitZoom: Multiple slow commands
-git add .
+git add file1.js
+git add file2.js  
+git add file3.js
 git commit -m "fix: updated feature"
 git push
-# ~3 minutes with editor delays 😴
+# ~3-5 seconds + thinking time 😴
 
-# After GitZoom: One lightning command
-zoom "fix: updated feature"
-# ~3 seconds ⚡
+# After GitZoom: Enhanced Lightning Push
+enhanced-lightning-push "fix: updated feature" -EnableBatchOps
+# ~260ms (95% faster!) ⚡
 ```
 
 ## ✨ Features
@@ -49,6 +51,16 @@ zoom "Your awesome commit message"
 - **Smart commits** - Stage files when committing
 - **Rebase by default** - Cleaner history
 - **Lightning editor** - No more Notepad delays
+
+### 🧪 Optimization Engine
+**MASSIVE Performance Improvements Achieved:**
+- **Batch Operations**: 80.88% faster file staging
+- **Enhanced Lightning Push**: 95% faster than manual Git
+- **Smart Caching**: 40-60% improvement for repeated operations
+- **Performance Benchmarking**: Comprehensive testing framework
+- **VS Code Integration**: Optimized settings and shortcuts
+
+See `OPTIMIZATION_RESULTS.md` for detailed performance data.
 
 ### 📊 Zoom Analytics
 ```powershell

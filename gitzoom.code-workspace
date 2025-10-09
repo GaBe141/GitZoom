@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "mhutchie.git-graph",
+      "eamodio.gitlens",
+      "ms-vscode.powershell"
+    ]
+  },
+  "settings": {
+    "gitzoom.projectType": "auto-detect",
+    "git.enabled": true,
+    "git.showUntracked": true,
+    "git.showUntrackedFiles": true,
+    "gitzoom.telemetry.enabled": true,
+    "files.associations": {
+      "*.gitattributes": "gitattributes",
+      "COMMIT_EDITMSG": "git-commit",
+      "*.gitignore": "ignore"
+    },
+    "search.exclude": {
+      "**/.git": true,
+      "**/*.log": true,
+      "**/node_modules": true,
+      "**/test-data": true
+    },
+    "gitzoom.optimization.level": "aggressive"
+  }
+}
