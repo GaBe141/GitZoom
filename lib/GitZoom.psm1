@@ -25,6 +25,7 @@ $Script:PerformanceMetrics = @{
 }
 
 # Import performance measurement function
+. "$PSScriptRoot\Shared.ps1"
 . "$PSScriptRoot\Performance.ps1"
 . "$PSScriptRoot\Configuration.ps1"
 . "$PSScriptRoot\Staging.ps1"

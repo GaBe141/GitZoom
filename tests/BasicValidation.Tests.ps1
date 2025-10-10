@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Basic validation tests for GitZoom library using Pester 3.x compatible syntax
+    Basic validation tests for GitZoom library using Pester 5.x compatible syntax
     
 .DESCRIPTION
     Simple tests to validate core GitZoom functionality without complex setups.
-    These tests use Pester 3.x compatible syntax and focus on basic functionality.
+    These tests use Pester 5.x compatible syntax and focus on basic functionality.
 #>
 
 Describe "GitZoom Basic Validation" {
@@ -30,18 +30,18 @@ Describe "GitZoom Basic Validation" {
     Context "Module Loading" {
         It "Should load GitZoom module without errors" {
             $module = Get-Module GitZoom
-            $module | Should Not Be $null
+            $module | Should -Not -Be $null
         }
         
         It "Should export expected functions" {
             $functions = Get-Command -Module GitZoom
-            $functions.Count | Should BeGreaterThan 0
+            $functions.Count | Should -BeGreaterThan 0
             
             # Check for key functions
             $functionNames = $functions.Name
-            $functionNames -contains "Initialize-GitZoom" | Should Be $true
-            $functionNames -contains "Add-GitZoomFile" | Should Be $true
-            $functionNames -contains "Get-GitZoomStatus" | Should Be $true
+            $functionNames -contains "Initialize-GitZoom" | Should -Be $true
+            $functionNames -contains "Add-GitZoomFile" | Should -Be $true
+            $functionNames -contains "Get-GitZoomStatus" | Should -Be $true
         }
     }
     
@@ -55,7 +55,7 @@ Describe "GitZoom Basic Validation" {
                 git config user.name "Test User"
                 
                 # Test basic function execution
-                { Initialize-GitZoom -Path $script:TestDir } | Should Not Throw
+                { Initialize-GitZoom -Path $script:TestDir } | Should -Not -Throw
             }
             finally {
                 Pop-Location
@@ -66,7 +66,7 @@ Describe "GitZoom Basic Validation" {
             Push-Location $script:TestDir
             try {
                 # Test that the function runs without error
-                { Get-GitZoomStatus } | Should Not Throw
+                { Get-GitZoomStatus } | Should -Not -Throw
             }
             finally {
                 Pop-Location
@@ -81,7 +81,7 @@ Describe "GitZoom Basic Validation" {
             try {
                 git init --quiet
                 $isRepo = Test-GitRepository
-                $isRepo | Should Be $true
+                $isRepo | Should -Be $true
             }
             finally {
                 Pop-Location
@@ -90,15 +90,15 @@ Describe "GitZoom Basic Validation" {
         
         It "Should format file sizes correctly" {
             $formatted = Format-FileSize -Bytes 1024
-            $formatted | Should Not Be $null
-            $formatted | Should Match "KB|MB|GB|B"
+            $formatted | Should -Not -Be $null
+            $formatted | Should -Match "KB|MB|GB|B"
         }
         
         It "Should format durations correctly" {
             $duration = [TimeSpan]::FromSeconds(65.5)
             $formatted = Format-Duration -TimeSpan $duration
-            $formatted | Should Not Be $null
-            $formatted | Should Match "s|ms|m"
+            $formatted | Should -Not -Be $null
+            $formatted | Should -Match "s|ms|m"
         }
     }
 }

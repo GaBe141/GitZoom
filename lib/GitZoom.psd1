@@ -65,6 +65,7 @@ PowerShellVersion = '5.1'
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 NestedModules = @(
+    'Shared.ps1',
     'Utilities.ps1',
     'Performance.ps1',
     'Configuration.ps1', 
