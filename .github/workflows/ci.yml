@@ -14,11 +14,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-      with:
-        pwsh: true
-
     - name: Install Pester
       shell: pwsh
       run: |
@@ -57,11 +52,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-      with:
-        pwsh: true
-
     - name: Install Pester
       shell: pwsh
       run: Install-Module -Name Pester -Force -SkipPublisherCheck
@@ -81,11 +71,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-      with:
-        pwsh: true
-
     - name: Run Performance Benchmark
       shell: pwsh
       run: |
@@ -100,11 +85,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-      with:
-        pwsh: true
 
     - name: Run Load Tests
       shell: pwsh
