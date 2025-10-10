@@ -1,0 +1,114 @@
+name: GitZoom CI/CD
+
+on:
+  push:
+    branches: [ main, test/infrastructure ]
+  pull_request:
+    branches: [ main, test/infrastructure ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PowerShell
+      uses: actions/setup-powershell@v1
+      with:
+        pwsh: true
+
+    - name: Install Pester
+      shell: pwsh
+      run: |
+        Install-Module -Name Pester -Force -SkipPublisherCheck
+        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
+
+    - name: Run PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path ./lib -Recurse -Severity Error,Warning
+        if ($results) {
+          Write-Host "PSScriptAnalyzer found issues:"
+          $results | Format-Table -AutoSize
+          exit 1
+        } else {
+          Write-Host "✅ PSScriptAnalyzer passed!"
+        }
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        ./tests/Run-AllTests.ps1 -OutputPath "TestResults.xml"
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: TestResults.xml
+
+  mutation-test:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PowerShell
+      uses: actions/setup-powershell@v1
+      with:
+        pwsh: true
+
+    - name: Install Pester
+      shell: pwsh
+      run: Install-Module -Name Pester -Force -SkipPublisherCheck
+
+    - name: Run Mutation Tests
+      shell: pwsh
+      run: |
+        Import-Module ./lib/GitZoom.psd1 -Force
+        ./tests/Mutation/Start-MutationTesting.ps1
+      continue-on-error: true
+
+  performance-test:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PowerShell
+      uses: actions/setup-powershell@v1
+      with:
+        pwsh: true
+
+    - name: Run Performance Benchmark
+      shell: pwsh
+      run: |
+        Import-Module ./lib/GitZoom.psd1 -Force
+        ./experiments/performance-benchmark.ps1 -GenerateReport
+      continue-on-error: true
+
+  load-test:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PowerShell
+      uses: actions/setup-powershell@v1
+      with:
+        pwsh: true
+
+    - name: Run Load Tests
+      shell: pwsh
+      run: |
+        Import-Module ./lib/GitZoom.psd1 -Force
+        ./tests/Load/Start-LoadTest.ps1
+      continue-on-error: true
