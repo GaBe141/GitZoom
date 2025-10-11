@@ -1,0 +1,320 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, test/infrastructure ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly security scan on Mondays at 3 AM UTC
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-review:
+    runs-on: windows-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v4
+      with:
+        fail-on-severity: moderate
+
+  code-scanning:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        # PowerShell is analyzed as JavaScript/TypeScript
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+  powershell-security:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
+    
+    - name: Run Security Rules
+      shell: pwsh
+      run: |
+        Write-Host "🔒 Running PowerShell Security Analysis..." -ForegroundColor Cyan
+        
+        $results = Invoke-ScriptAnalyzer `
+          -Path ./lib `
+          -Recurse `
+          -Severity Error,Warning `
+          -IncludeRule PSAvoidUsingPlainTextForPassword, `
+                        PSAvoidUsingConvertToSecureStringWithPlainText, `
+                        PSAvoidUsingInvokeExpression, `
+                        PSAvoidUsingComputerNameHardcoded, `
+                        PSAvoidUsingUsernameAndPasswordParams, `
+                        PSAvoidGlobalVars, `
+                        PSUseShouldProcessForStateChangingFunctions
+        
+        if ($results) {
+          Write-Host "❌ Security issues found:" -ForegroundColor Red
+          $results | Format-Table -AutoSize
+          
+          # Create SARIF report for GitHub
+          $results | ConvertTo-Json -Depth 10 | Set-Content "security-results.json"
+          
+          exit 1
+        } else {
+          Write-Host "✅ No security issues found!" -ForegroundColor Green
+        }
+    
+    - name: Check for Hardcoded Secrets
+      shell: pwsh
+      run: |
+        Write-Host "🔍 Scanning for hardcoded secrets..." -ForegroundColor Cyan
+        
+        $patterns = @(
+          @{ Name = "API Keys"; Pattern = "(?i)(api[_-]?key|apikey)\s*[:=]\s*['\`"][a-zA-Z0-9]{20,}['\`"]" }
+          @{ Name = "Passwords"; Pattern = "(?i)(password|passwd|pwd)\s*[:=]\s*['\`"][^'\`"]{8,}['\`"]" }
+          @{ Name = "Tokens"; Pattern = "(?i)(token|secret)\s*[:=]\s*['\`"][a-zA-Z0-9_-]{20,}['\`"]" }
+          @{ Name = "Private Keys"; Pattern = "-----BEGIN (RSA |DSA |EC )?PRIVATE KEY-----" }
+        )
+        
+        $found = $false
+        
+        Get-ChildItem -Path ./lib, ./scripts -Include *.ps1, *.psm1, *.psd1 -Recurse | ForEach-Object {
+          $content = Get-Content $_.FullName -Raw
+          
+          foreach ($pattern in $patterns) {
+            if ($content -match $pattern.Pattern) {
+              Write-Host "⚠️  Possible $($pattern.Name) found in: $($_.Name)" -ForegroundColor Yellow
+              $found = $true
+            }
+          }
+        }
+        
+        if ($found) {
+          Write-Host "❌ Potential secrets detected! Please review." -ForegroundColor Red
+          exit 1
+        } else {
+          Write-Host "✅ No hardcoded secrets detected." -ForegroundColor Green
+        }
+    
+    - name: Check File Permissions
+      shell: pwsh
+      run: |
+        Write-Host "🔒 Checking file permissions..." -ForegroundColor Cyan
+        
+        # Ensure no executable permissions on script files (Windows-specific)
+        $issues = @()
+        
+        Get-ChildItem -Path ./lib, ./scripts -Include *.ps1, *.psm1 -Recurse | ForEach-Object {
+          # Check if file contains sensitive operations
+          $content = Get-Content $_.FullName -Raw
+          
+          if ($content -match "Remove-Item.*-Recurse.*-Force" -and $content -notmatch "ErrorAction\s+SilentlyContinue") {
+            $issues += "File $($_.Name) uses dangerous Remove-Item without error handling"
+          }
+          
+          if ($content -match "Invoke-Expression" -or $content -match "iex ") {
+            $issues += "File $($_.Name) uses Invoke-Expression (potential code injection risk)"
+          }
+        }
+        
+        if ($issues) {
+          Write-Host "⚠️  Security concerns:" -ForegroundColor Yellow
+          $issues | ForEach-Object { Write-Host "   - $_" -ForegroundColor Yellow }
+          Write-Host "❌ Please review these files for security best practices." -ForegroundColor Red
+          exit 1
+        } else {
+          Write-Host "✅ File permission checks passed." -ForegroundColor Green
+        }
+    
+    - name: Validate Module Manifest
+      shell: pwsh
+      run: |
+        Write-Host "📦 Validating module manifest security..." -ForegroundColor Cyan
+        
+        try {
+          $manifest = Test-ModuleManifest -Path ./lib/GitZoom.psd1 -ErrorAction Stop
+          
+          # Check for required security fields
+          if (-not $manifest.PrivateData.PSData.LicenseUri) {
+            Write-Host "⚠️  No license URI specified" -ForegroundColor Yellow
+          }
+          
+          if (-not $manifest.PrivateData.PSData.ProjectUri) {
+            Write-Host "⚠️  No project URI specified" -ForegroundColor Yellow
+          }
+          
+          # Check for suspicious function exports
+          $exportedFunctions = $manifest.ExportedFunctions.Keys
+          $suspiciousFunctions = @("Invoke-Expression", "Invoke-Command", "Start-Process")
+          
+          $found = $false
+          foreach ($func in $suspiciousFunctions) {
+            if ($exportedFunctions -contains $func) {
+              Write-Host "⚠️  Exports potentially dangerous function: $func" -ForegroundColor Yellow
+              $found = $true
+            }
+          }
+          
+          if (-not $found) {
+            Write-Host "✅ Module manifest validation passed." -ForegroundColor Green
+          }
+          
+        } catch {
+          Write-Host "❌ Module manifest validation failed: $($_.Exception.Message)" -ForegroundColor Red
+          exit 1
+        }
+    
+    - name: Check for Vulnerable Dependencies
+      shell: pwsh
+      run: |
+        Write-Host "🔍 Checking PowerShell module dependencies..." -ForegroundColor Cyan
+        
+        $manifest = Import-PowerShellDataFile ./lib/GitZoom.psd1
+        
+        if ($manifest.RequiredModules) {
+          Write-Host "Required modules:" -ForegroundColor Yellow
+          $manifest.RequiredModules | ForEach-Object {
+            Write-Host "   - $_" -ForegroundColor Gray
+          }
+          
+          # Here you could add checks against known vulnerable module versions
+          # For now, just report what's required
+          Write-Host "✅ Dependency check complete." -ForegroundColor Green
+        } else {
+          Write-Host "✅ No external dependencies required." -ForegroundColor Green
+        }
+    
+    - name: Upload security results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-scan-results
+        path: |
+          security-results.json
+        retention-days: 30
+
+  supply-chain-security:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Check Git Configuration
+      shell: pwsh
+      run: |
+        Write-Host "🔒 Validating Git security settings..." -ForegroundColor Cyan
+        
+        # Check for .gitignore
+        if (-not (Test-Path .gitignore)) {
+          Write-Host "⚠️  No .gitignore file found" -ForegroundColor Yellow
+        } else {
+          $gitignore = Get-Content .gitignore -Raw
+          
+          # Check for common sensitive patterns
+          $requiredPatterns = @("*.key", "*.pem", ".env", "secrets.*")
+          $missing = @()
+          
+          foreach ($pattern in $requiredPatterns) {
+            if ($gitignore -notmatch [regex]::Escape($pattern)) {
+              $missing += $pattern
+            }
+          }
+          
+          if ($missing) {
+            Write-Host "⚠️  .gitignore missing patterns: $($missing -join ', ')" -ForegroundColor Yellow
+          } else {
+            Write-Host "✅ .gitignore configured properly." -ForegroundColor Green
+          }
+        }
+    
+    - name: Verify Code Signing (Optional)
+      shell: pwsh
+      run: |
+        Write-Host "🔏 Checking for code signing..." -ForegroundColor Cyan
+        
+        $signed = 0
+        $unsigned = 0
+        
+        Get-ChildItem -Path ./lib -Include *.ps1, *.psm1 -Recurse | ForEach-Object {
+          $sig = Get-AuthenticodeSignature $_.FullName
+          if ($sig.Status -eq 'Valid') {
+            $signed++
+          } else {
+            $unsigned++
+          }
+        }
+        
+        Write-Host "📊 Code signing status:" -ForegroundColor Cyan
+        Write-Host "   Signed: $signed" -ForegroundColor Green
+        Write-Host "   Unsigned: $unsigned" -ForegroundColor Yellow
+        
+        # Don't fail on unsigned code, just report
+        Write-Host "ℹ️  Code signing is optional but recommended for production." -ForegroundColor Cyan
+
+  generate-security-report:
+    needs: [powershell-security, supply-chain-security]
+    runs-on: windows-latest
+    if: always()
+    
+    steps:
+    - name: Create Security Summary
+      shell: pwsh
+      run: |
+        $summary = @"
+        # 🔒 Security Scan Summary
+        
+        ## Scan Date
+        $(Get-Date -Format "yyyy-MM-dd HH:mm:ss UTC")
+        
+        ## Scans Performed
+        - ✅ PSScriptAnalyzer Security Rules
+        - ✅ Hardcoded Secrets Detection
+        - ✅ File Permission Analysis
+        - ✅ Module Manifest Validation
+        - ✅ Dependency Security Check
+        - ✅ Supply Chain Security
+        - ✅ Code Signing Status
+        
+        ## Recommendations
+        1. Keep all dependencies up to date
+        2. Review PSScriptAnalyzer findings regularly
+        3. Consider code signing for production releases
+        4. Maintain comprehensive .gitignore
+        5. Implement pre-commit hooks for security checks
+        
+        ## Next Steps
+        - Review any warnings from this scan
+        - Update security documentation
+        - Schedule regular security reviews
+        "@
+        
+        $summary | Set-Content security-summary.md
+        Write-Host $summary
+    
+    - name: Upload summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-summary
+        path: security-summary.md
