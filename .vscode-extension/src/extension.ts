@@ -24,6 +24,61 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(runExperiment);
+
+    const recommendOptimization = vscode.commands.registerCommand('gitzoom.recommendOptimization', async () => {
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+        if (!workspaceRoot) {
+            vscode.window.showErrorMessage('Open a workspace to run GitZoom recommendations.');
+            return;
+        }
+
+        // Simple heuristic: recommend core.untrackedCache and core.fscache if not set
+        const output = vscode.window.createOutputChannel('GitZoom Recommendations');
+        output.show(true);
+        output.appendLine('Scanning repository for low-risk staging optimizations...');
+
+        // Check current git configs
+        const { exec } = require('child_process');
+        exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
+            if (err) {
+                output.appendLine('Failed to read git config: ' + (stderr || err.message));
+                return;
+            }
+
+            const configs = stdout.split(/\r?\n/).filter(Boolean);
+            const hasUntracked = configs.some((c: string) => c.startsWith('core.untrackedCache='));
+            const hasFscache = configs.some((c: string) => c.startsWith('core.fscache='));
+
+            const recommendations: Array<{key:string,value:string,reason:string}> = [];
+            if (!hasUntracked) { recommendations.push({ key: 'core.untrackedCache', value: 'true', reason: 'Speeds up staging by caching untracked files.' }); }
+            if (!hasFscache) { recommendations.push({ key: 'core.fscache', value: 'true', reason: 'Improves IO performance on supported platforms.' }); }
+
+            if (recommendations.length === 0) {
+                output.appendLine('No low-risk staging recommendations detected.');
+                return;
+            }
+
+            output.appendLine('\nRecommendations:');
+            recommendations.forEach((r) => output.appendLine(`- ${r.key} = ${r.value}: ${r.reason}`));
+
+            vscode.window.showInformationMessage('Apply recommended staging optimizations?', 'Apply', 'Ignore').then((choice) => {
+                if (choice !== 'Apply') { output.appendLine('User ignored recommendations.'); return; }
+
+                // Apply recommendations
+                recommendations.forEach((r) => {
+                    exec(`git config ${r.key} ${r.value}`, { cwd: workspaceRoot }, (e: any, o: string, se: string) => {
+                        if (e) {
+                            output.appendLine(`Failed to set ${r.key}: ${se || e.message}`);
+                        } else {
+                            output.appendLine(`Applied ${r.key} = ${r.value}`);
+                        }
+                    });
+                });
+            });
+        });
+    });
+
+    context.subscriptions.push(recommendOptimization);
 }
 
 export function deactivate() {}
