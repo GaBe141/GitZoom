@@ -35,7 +35,7 @@ jobs:
     - name: Run Tests
       shell: pwsh
       run: |
-        ./tests/Run-AllTests.ps1 -OutputPath "TestResults.xml"
+        ./tests/Run-AllTests.ps1 -OutputPath "TestResults.xml" -Coverage
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -43,6 +43,29 @@ jobs:
       with:
         name: test-results
         path: TestResults.xml
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report
+        path: Coverage.xml
+
+    - name: Display coverage summary
+      shell: pwsh
+      if: always()
+      run: |
+        if (Test-Path "Coverage.xml") {
+          [xml]$coverage = Get-Content "Coverage.xml"
+          $metrics = $coverage.report.counter | Where-Object { $_.type -eq 'INSTRUCTION' }
+          if ($metrics) {
+            $covered = [int]$metrics.covered
+            $missed = [int]$metrics.missed
+            $total = $covered + $missed
+            $percentage = if ($total -gt 0) { [math]::Round(($covered / $total) * 100, 2) } else { 0 }
+            Write-Host "📊 Code Coverage: $percentage% ($covered/$total instructions)" -ForegroundColor Cyan
+          }
+        }
 
   mutation-test:
     runs-on: windows-latest
@@ -77,6 +100,32 @@ jobs:
         Import-Module ./lib/GitZoom.psd1 -Force
         ./experiments/performance-benchmark.ps1 -GenerateReport
       continue-on-error: true
+
+  integration-test:
+    runs-on: windows-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Pester
+      shell: pwsh
+      run: Install-Module -Name Pester -Force -SkipPublisherCheck
+
+    - name: Run Integration Tests
+      shell: pwsh
+      run: |
+        Import-Module ./lib/GitZoom.psd1 -Force
+        ./tests/Integration/Run-IntegrationTests.ps1 -IncludePerformance
+      continue-on-error: true
+
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results
+        path: IntegrationTestResults.xml
 
   load-test:
     runs-on: windows-latest

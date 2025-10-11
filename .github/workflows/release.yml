@@ -1,0 +1,123 @@
+name: Release to PowerShell Gallery
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      shell: pwsh
+      run: |
+        Install-Module -Name Pester -Force -SkipPublisherCheck
+        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
+
+    - name: Run tests
+      shell: pwsh
+      run: |
+        ./tests/Run-AllTests.ps1 -Coverage
+
+    - name: Run PSScriptAnalyzer
+      shell: pwsh
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path ./lib -Recurse -Severity Error,Warning
+        if ($results) {
+          Write-Host "❌ PSScriptAnalyzer found issues:"
+          $results | Format-Table -AutoSize
+          exit 1
+        }
+
+    - name: Validate module manifest
+      shell: pwsh
+      run: |
+        $manifest = Test-ModuleManifest -Path ./lib/GitZoom.psd1 -ErrorAction Stop
+        Write-Host "✅ Module manifest is valid"
+        Write-Host "   Name: $($manifest.Name)"
+        Write-Host "   Version: $($manifest.Version)"
+        Write-Host "   Author: $($manifest.Author)"
+
+  publish:
+    runs-on: windows-latest
+    needs: validate
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Update version in manifest
+      if: github.event_name == 'workflow_dispatch'
+      shell: pwsh
+      run: |
+        $manifestPath = "./lib/GitZoom.psd1"
+        $content = Get-Content $manifestPath -Raw
+        $newVersion = "${{ github.event.inputs.version }}"
+        $content = $content -replace "ModuleVersion\s*=\s*'[\d\.]+'", "ModuleVersion = '$newVersion'"
+        Set-Content -Path $manifestPath -Value $content
+        Write-Host "✅ Updated version to $newVersion"
+
+    - name: Publish to PowerShell Gallery
+      shell: pwsh
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        if (-not $env:NUGET_API_KEY) {
+          Write-Host "❌ PowerShell Gallery API key not found!"
+          Write-Host "Please add NUGET_API_KEY to repository secrets"
+          exit 1
+        }
+        
+        try {
+          Write-Host "📦 Publishing GitZoom to PowerShell Gallery..."
+          Publish-Module -Path ./lib -NuGetApiKey $env:NUGET_API_KEY -Verbose
+          Write-Host "✅ Successfully published to PowerShell Gallery!"
+        } catch {
+          Write-Host "❌ Failed to publish: $($_.Exception.Message)"
+          exit 1
+        }
+
+    - name: Create GitHub release notes
+      shell: pwsh
+      run: |
+        $manifest = Import-PowerShellDataFile ./lib/GitZoom.psd1
+        $version = $manifest.ModuleVersion
+        
+        $notes = @"
+        # GitZoom v$version
+        
+        ## Installation
+        
+        ``````powershell
+        Install-Module -Name GitZoom -Scope CurrentUser
+        ``````
+        
+        ## What's Changed
+        
+        See the [CHANGELOG](./CHANGELOG.md) for details.
+        
+        ## PowerShell Gallery
+        
+        This release is now available on the PowerShell Gallery:
+        https://www.powershellgallery.com/packages/GitZoom/$version
+        "@
+        
+        Set-Content -Path release-notes.md -Value $notes
+        Write-Host "✅ Generated release notes"
+
+    - name: Upload release notes
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-notes
+        path: release-notes.md

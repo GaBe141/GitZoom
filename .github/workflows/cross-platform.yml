@@ -1,0 +1,227 @@
+name: Cross-Platform Testing
+
+on:
+  push:
+    branches: [ main, test/infrastructure ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            shell: pwsh
+            platform: Windows
+          - os: ubuntu-latest
+            shell: pwsh
+            platform: Linux
+          - os: macos-latest
+            shell: pwsh
+            platform: macOS
+    
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.platform }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup PowerShell on non-Windows
+      if: matrix.os != 'windows-latest'
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install -y powershell
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          brew install --cask powershell
+        fi
+      shell: bash
+    
+    - name: Verify PowerShell installation
+      shell: ${{ matrix.shell }}
+      run: |
+        $PSVersionTable
+        Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+    
+    - name: Install Git
+      shell: ${{ matrix.shell }}
+      run: |
+        if ($IsLinux) {
+          sudo apt-get install -y git
+        } elseif ($IsMacOS) {
+          brew install git
+        }
+        git --version
+    
+    - name: Install Pester
+      shell: ${{ matrix.shell }}
+      run: |
+        Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser
+        Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck -Scope CurrentUser
+    
+    - name: Import GitZoom Module
+      shell: ${{ matrix.shell }}
+      run: |
+        Import-Module ./lib/GitZoom.psd1 -Force
+        Get-Module GitZoom
+    
+    - name: Run PSScriptAnalyzer
+      shell: ${{ matrix.shell }}
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path ./lib -Recurse -Severity Error,Warning
+        if ($results) {
+          Write-Host "PSScriptAnalyzer found issues on ${{ matrix.platform }}:"
+          $results | Format-Table -AutoSize
+          exit 1
+        } else {
+          Write-Host "✅ PSScriptAnalyzer passed on ${{ matrix.platform }}!"
+        }
+    
+    - name: Run Unit Tests
+      shell: ${{ matrix.shell }}
+      run: |
+        ./tests/Run-AllTests.ps1 -OutputPath "TestResults-${{ matrix.platform }}.xml"
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.platform }}
+        path: TestResults-${{ matrix.platform }}.xml
+    
+    - name: Test platform-specific features
+      shell: ${{ matrix.shell }}
+      run: |
+        Write-Host "Testing on ${{ matrix.platform }}"
+        
+        # Test file path handling
+        $testPath = Join-Path $env:TEMP "gitzoom-test"
+        New-Item -ItemType Directory -Path $testPath -Force | Out-Null
+        
+        Push-Location $testPath
+        try {
+          git init
+          git config user.email "test@gitzoom.test"
+          git config user.name "GitZoom Test"
+          
+          # Create test file
+          "Test content" | Set-Content "test.txt"
+          
+          # Test GitZoom commands
+          Import-Module ${{ github.workspace }}/lib/GitZoom.psd1 -Force
+          
+          $stageResult = Invoke-GitZoomStage -Path "test.txt"
+          if (-not $stageResult.Success) {
+            Write-Host "❌ Staging failed on ${{ matrix.platform }}"
+            exit 1
+          }
+          
+          $commitResult = Invoke-GitZoomCommit -Message "Test commit"
+          if (-not $commitResult.Success) {
+            Write-Host "❌ Commit failed on ${{ matrix.platform }}"
+            exit 1
+          }
+          
+          Write-Host "✅ Platform-specific tests passed on ${{ matrix.platform }}"
+        } finally {
+          Pop-Location
+          Remove-Item -Recurse -Force $testPath -ErrorAction SilentlyContinue
+        }
+    
+    - name: Performance benchmark
+      shell: ${{ matrix.shell }}
+      run: |
+        Write-Host "Running performance benchmark on ${{ matrix.platform }}"
+        Import-Module ./lib/GitZoom.psd1 -Force
+        
+        # Create test repository
+        $testPath = Join-Path $env:TEMP "perf-test-${{ matrix.platform }}"
+        New-Item -ItemType Directory -Path $testPath -Force | Out-Null
+        
+        Push-Location $testPath
+        try {
+          git init
+          git config user.email "test@gitzoom.test"
+          git config user.name "GitZoom Test"
+          
+          # Create 100 test files
+          1..100 | ForEach-Object {
+            "Content $_" | Set-Content "file$_.txt"
+          }
+          
+          # Benchmark GitZoom
+          $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+          Invoke-GitZoomStage -All | Out-Null
+          Invoke-GitZoomCommit -Message "Benchmark" | Out-Null
+          $stopwatch.Stop()
+          
+          $duration = $stopwatch.ElapsedMilliseconds
+          Write-Host "⚡ Performance on ${{ matrix.platform }}: ${duration}ms for 100 files"
+          
+          # Save metric
+          @{
+            Platform = "${{ matrix.platform }}"
+            Duration = $duration
+            FileCount = 100
+          } | ConvertTo-Json | Set-Content "perf-${{ matrix.platform }}.json"
+          
+        } finally {
+          Pop-Location
+          Remove-Item -Recurse -Force $testPath -ErrorAction SilentlyContinue
+        }
+      continue-on-error: true
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-${{ matrix.platform }}
+        path: perf-${{ matrix.platform }}.json
+  
+  analyze-results:
+    needs: test-matrix
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+    
+    - name: Summarize results
+      run: |
+        echo "# Cross-Platform Test Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+        
+        for platform in Windows Linux macOS; do
+          if [ -f "test-results-${platform}/TestResults-${platform}.xml" ]; then
+            echo "| ${platform} | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| ${platform} | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Performance Comparison" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f "performance-Windows/perf-Windows.json" ]; then
+          echo "**Windows:** $(cat performance-Windows/perf-Windows.json | grep Duration | cut -d: -f2 | tr -d ' ,')ms" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "performance-Linux/perf-Linux.json" ]; then
+          echo "**Linux:** $(cat performance-Linux/perf-Linux.json | grep Duration | cut -d: -f2 | tr -d ' ,')ms" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "performance-macOS/perf-macOS.json" ]; then
+          echo "**macOS:** $(cat performance-macOS/perf-macOS.json | grep Duration | cut -d: -f2 | tr -d ' ,')ms" >> $GITHUB_STEP_SUMMARY
+        fi
