@@ -5,15 +5,30 @@ export function activate(context: vscode.ExtensionContext) {
     const output = vscode.window.createOutputChannel('GitZoom Experiments');
 
     const runExperiment = vscode.commands.registerCommand('gitzoom.runExperiment', async () => {
-        const scripts = ['experiments/staging-champion.ps1', 'experiments/adaptive-turbo.ps1'];
-        const choice = await vscode.window.showQuickPick(scripts, { placeHolder: 'Select an experiment to run' });
-        if (!choice) { return; }
+        // Auto-discover experiment scripts under the workspace experiments/ folder
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri;
+        if (!workspaceRoot) {
+            vscode.window.showErrorMessage('Open a workspace to run GitZoom experiments.');
+            return;
+        }
 
+        const files = await vscode.workspace.findFiles('experiments/**/*.ps1', '**/node_modules/**');
+        if (!files || files.length === 0) {
+            vscode.window.showInformationMessage('No experiment scripts found in the workspace `experiments/` folder.');
+            return;
+        }
+
+        const items = files.map(f => ({ label: vscode.workspace.asRelativePath(f), uri: f }));
+        const pick = await vscode.window.showQuickPick(items, { placeHolder: 'Select an experiment to run' });
+        if (!pick) { return; }
+
+        const choicePath = pick.uri.fsPath;
         output.show(true);
-        output.appendLine(`Running experiment: ${choice}`);
+        output.appendLine(`Running experiment: ${vscode.workspace.asRelativePath(pick.uri)}`);
 
-        const command = `pwsh -NoProfile -ExecutionPolicy Bypass -File "${choice}" -TestStagingChampion`;
-        const proc = exec(command, { cwd: vscode.workspace.workspaceFolders?.[0].uri.fsPath });
+        const pwsh = 'pwsh';
+        const command = `${pwsh} -NoProfile -ExecutionPolicy Bypass -File "${choicePath}"`;
+        const proc = exec(command, { cwd: workspaceRoot.fsPath });
 
         proc.stdout?.on('data', (data) => output.append(data.toString()));
         proc.stderr?.on('data', (data) => output.append(data.toString()));
@@ -38,8 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         output.appendLine('Scanning repository for low-risk staging optimizations...');
 
         // Check current git configs
-        const { exec } = require('child_process');
-        exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
+    exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
             if (err) {
                 output.appendLine('Failed to read git config: ' + (stderr || err.message));
                 return;
