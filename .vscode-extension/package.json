@@ -25,6 +25,33 @@
         "title": "GitZoom: Recommend Staging Optimization"
       }
     ]
+    ,
+    "configuration": {
+      "type": "object",
+      "title": "GitZoom",
+      "properties": {
+        "gitzoom.pwshPath": {
+          "type": "string",
+          "default": "pwsh",
+          "description": "Path to the PowerShell executable used to run experiments"
+        },
+        "gitzoom.recommendations.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable GitZoom's automatic recommendations"
+        },
+        "gitzoom.experiments.glob": {
+          "type": "string",
+          "default": "experiments/**/*.ps1",
+          "description": "Glob pattern used to discover experiment scripts"
+        },
+        "gitzoom.dryRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, recommendations will be shown but not applied"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

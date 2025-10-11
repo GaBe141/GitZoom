@@ -12,7 +12,10 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const files = await vscode.workspace.findFiles('experiments/**/*.ps1', '**/node_modules/**');
+    const config = vscode.workspace.getConfiguration('gitzoom');
+    const globPattern = config.get<string>('experiments.glob', 'experiments/**/*.ps1');
+    const pwshPath = config.get<string>('pwshPath', 'pwsh');
+    const files = await vscode.workspace.findFiles(globPattern, '**/node_modules/**');
         if (!files || files.length === 0) {
             vscode.window.showInformationMessage('No experiment scripts found in the workspace `experiments/` folder.');
             return;
@@ -26,8 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
         output.show(true);
         output.appendLine(`Running experiment: ${vscode.workspace.asRelativePath(pick.uri)}`);
 
-        const pwsh = 'pwsh';
-        const command = `${pwsh} -NoProfile -ExecutionPolicy Bypass -File "${choicePath}"`;
+    const command = `${pwshPath} -NoProfile -ExecutionPolicy Bypass -File "${choicePath}"`;
         const proc = exec(command, { cwd: workspaceRoot.fsPath });
 
         proc.stdout?.on('data', (data) => output.append(data.toString()));
@@ -50,7 +52,11 @@ export function activate(context: vscode.ExtensionContext) {
         // Simple heuristic: recommend core.untrackedCache and core.fscache if not set
         const output = vscode.window.createOutputChannel('GitZoom Recommendations');
         output.show(true);
-        output.appendLine('Scanning repository for low-risk staging optimizations...');
+    const configSettings = vscode.workspace.getConfiguration('gitzoom');
+    const enableRecommendations = configSettings.get<boolean>('recommendations.enable', true);
+    const dryRun = configSettings.get<boolean>('dryRun', false);
+
+    output.appendLine('Scanning repository for low-risk staging optimizations...');
 
         // Check current git configs
     exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
@@ -75,12 +81,20 @@ export function activate(context: vscode.ExtensionContext) {
             output.appendLine('\nRecommendations:');
             recommendations.forEach((r) => output.appendLine(`- ${r.key} = ${r.value}: ${r.reason}`));
 
+            if (!enableRecommendations) { output.appendLine('Recommendations are disabled via settings.'); return; }
+
             vscode.window.showInformationMessage('Apply recommended staging optimizations?', 'Apply', 'Ignore').then((choice) => {
                 if (choice !== 'Apply') { output.appendLine('User ignored recommendations.'); return; }
 
-                // Apply recommendations
+                // Apply recommendations (dry-run support)
                 recommendations.forEach((r) => {
-                    exec(`git config ${r.key} ${r.value}`, { cwd: workspaceRoot }, (e: any, o: string, se: string) => {
+                    const cmd = `git config ${r.key} ${r.value}`;
+                    if (dryRun) {
+                        output.appendLine(`[dry-run] ${cmd}`);
+                        return;
+                    }
+
+                    exec(cmd, { cwd: workspaceRoot }, (e: any, o: string, se: string) => {
                         if (e) {
                             output.appendLine(`Failed to set ${r.key}: ${se || e.message}`);
                         } else {
