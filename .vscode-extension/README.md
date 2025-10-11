@@ -9,3 +9,11 @@ How it works:
 
 Notes:
 - This is a prototype. For a production extension you should bundle the extension, add configuration for script discovery, and handle process lifecycle more robustly.
+
+## Recommendations & Safe Apply
+
+The extension can scan your workspace for low-risk Git recommendations (for example `core.untrackedCache` and `core.fscache`) and offer to apply them.
+
+Before applying any changes the extension creates a JSON backup in `.gitzoom/backups/` containing previous values so you can rollback if needed. Backups are compatible with the CLI (they share the same folder).
+
+Use the `GitZoom: Recommendations Menu` command (status bar) to view recommendations, apply them, or restore a previous backup via the `Rollback` command.

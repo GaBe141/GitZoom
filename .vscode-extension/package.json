@@ -29,6 +29,16 @@
         "command": "gitzoom.openRecommendationsMenu",
         "title": "GitZoom: Recommendations Menu"
       }
+      ,
+      {
+        "command": "gitzoom.applyRecommendations",
+        "title": "GitZoom: Apply Recommended Configs"
+      }
+      ,
+      {
+        "command": "gitzoom.rollbackRecommendations",
+        "title": "GitZoom: Rollback Recommendations (restore backup)"
+      }
     ]
     ,
     "configuration": {

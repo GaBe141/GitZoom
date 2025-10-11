@@ -10,7 +10,7 @@
   },
   "keywords": [
     "git",
-    "workflow", 
+    "workflow",
     "productivity",
     "vscode",
     "powershell",
@@ -23,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GaBe141/GitZoom.git"
+    "url": "git+https://github.com/GaBe141/GitZoom.git"
   },
   "bugs": {
     "url": "https://github.com/GaBe141/GitZoom/issues"
@@ -34,5 +34,11 @@
   },
   "os": [
     "win32"
-  ]
+  ],
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "type": "commonjs"
 }

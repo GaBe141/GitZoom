@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+  <style>
+    .bg { fill: #0f172a; }
+    .label { fill: #e6eef8; font-family: Inter, Arial, sans-serif; font-size: 12px; }
+    .title { fill: #ffffff; font-family: Inter, Arial, sans-serif; font-size: 20px; font-weight: 700; }
+    .bar { fill: #60a5fa; }
+    .bar2 { fill: #34d399; }
+    .axis { stroke: #94a3b8; stroke-width: 1; }
+    .grid { stroke: #1f2937; stroke-width: 1; }
+    .note { fill: #9ca3af; font-size: 11px; }
+  </style>
+
+  <rect x="0" y="0" width="900" height="420" fill="#071029" />
+
+  <text x="30" y="38" class="title">GitZoom — Commit performance comparison (ms)</text>
+
+  <!-- Legend -->
+  <rect x="650" y="18" width="14" height="12" fill="#60a5fa"/>
+  <text x="670" y="30" class="label">Standard operations</text>
+  <rect x="650" y="36" width="14" height="12" fill="#34d399"/>
+  <text x="670" y="48" class="label">GitZoom / optimized</text>
+
+  <!-- Axis labels -->
+  <g transform="translate(40,80)">
+    <!-- vertical grid -->
+    <g>
+      <!-- max scale = 2200ms -> grid lines every 400ms -->
+      <!-- draw horizontal grid lines -->
+      <line x1="0" y1="0" x2="560" y2="0" class="grid" />
+      <line x1="0" y1="80" x2="560" y2="80" class="grid" />
+      <line x1="0" y1="160" x2="560" y2="160" class="grid" />
+      <line x1="0" y1="240" x2="560" y2="240" class="grid" />
+      <line x1="0" y1="320" x2="560" y2="320" class="grid" />
+    </g>
+
+    <!-- y-axis labels (ms) -->
+    <text x="570" y="5" class="label">2200 ms</text>
+    <text x="570" y="85" class="label">1600 ms</text>
+    <text x="570" y="165" class="label">1200 ms</text>
+    <text x="570" y="245" class="label">800 ms</text>
+    <text x="570" y="325" class="label">400 ms</text>
+
+    <!-- Bars (x positions for groups) -->
+    <!-- We'll scale ms to pixel: scale = 560 / 2200 ≈ 0.2545 px per ms -->
+    <!-- Data points (ms) -->
+    <!-- Baseline Commit (from artifacts): 45 ms -->
+    <!-- Commit Small Files: 70 ms -->
+    <!-- Commit Large File: 74 ms -->
+    <!-- GitZoom Lightning Push: 2160 ms (full push+staging flow) -->
+
+    <!-- compute x lengths manually and place bars -->
+    <!-- Baseline Commit -->
+    <g transform="translate(0,20)">
+      <text x="0" y="-6" class="label">Baseline Commit (50 files)</text>
+      <rect x="0" y="0" width="11.45" height="18" class="bar" rx="3"/>
+      <text x="14" y="13" class="label">45 ms</text>
+    </g>
+
+    <!-- Small files commit -->
+    <g transform="translate(0,60)">
+      <text x="0" y="-6" class="label">Commit — small files (10 files)</text>
+      <rect x="0" y="0" width="17.82" height="18" class="bar" rx="3"/>
+      <text x="20" y="13" class="label">70 ms</text>
+    </g>
+
+    <!-- Large file commit -->
+    <g transform="translate(0,100)">
+      <text x="0" y="-6" class="label">Commit — large file (1MB)</text>
+      <rect x="0" y="0" width="18.83" height="18" class="bar" rx="3"/>
+      <text x="20" y="13" class="label">74 ms</text>
+    </g>
+
+    <!-- Lightning push (GitZoom) - long bar to the right -->
+    <g transform="translate(0,150)">
+      <text x="0" y="-6" class="label">GitZoom Lightning Push (stage+commit+push)</text>
+      <rect x="0" y="0" width="549.7" height="18" class="bar2" rx="3"/>
+      <text x="554" y="13" class="label">2160 ms</text>
+    </g>
+
+    <!-- Additional operations: Git Fetch and Push shown compactly -->
+    <g transform="translate(0,200)">
+      <text x="0" y="-6" class="label">Git Fetch</text>
+      <rect x="0" y="0" width="134.6" height="12" fill="#f97316" rx="2"/>
+      <text x="140" y="10" class="label">529 ms</text>
+    </g>
+
+    <g transform="translate(0,230)">
+      <text x="0" y="-6" class="label">Git Push</text>
+      <rect x="0" y="0" width="230.9" height="12" fill="#ef4444" rx="2"/>
+      <text x="236" y="10" class="label">906 ms</text>
+    </g>
+
+    <!-- Footnotes / ratios -->
+    <g transform="translate(0,280)">
+      <text x="0" y="16" class="note">Note: Baseline commit (45 ms) is a single commit measurement. "GitZoom Lightning Push" is a full workflow measurement (stage+commit+push) shown for context.</text>
+      <text x="0" y="34" class="note">GitZoom Lightning Push is ~48x longer than a single commit (2160 / 45 ≈ 48). That difference is because the Lightning Push measurement includes network push & fetch steps.</text>
+    </g>
+  </g>
+</svg>
