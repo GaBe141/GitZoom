@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
+  <style>
+    .bg { fill: #071029; }
+    .title { font: 18px Inter, Arial, sans-serif; fill: #ffffff; font-weight:700 }
+    .label { font: 12px Inter, Arial, sans-serif; fill: #e6eef8 }
+    .value { font: 12px Inter, Arial, sans-serif; fill: #ffffff }
+    .barA { fill: #60a5fa }
+    .barB { fill: #34d399 }
+    .axis { stroke: #94a3b8; stroke-width: 1 }
+    .note { font: 11px Inter, Arial, sans-serif; fill: #9ca3af }
+  </style>
+
+  <rect x="0" y="0" width="900" height="360" fill="#071029" />
+  <text x="28" y="36" class="title">Aggregated commit comparison — tuned vs pre-tuned (N=10 runs harness)</text>
+
+  <!-- Legend -->
+  <rect x="650" y="18" width="14" height="12" fill="#60a5fa"/>
+  <text x="670" y="30" class="label">Pre-tuned (100 files)</text>
+  <rect x="650" y="36" width="14" height="12" fill="#34d399"/>
+  <text x="670" y="48" class="label">Tuned (100 files, core.untrackedCache=true)</text>
+
+  <g transform="translate(40,70)">
+    <!-- Axis baseline for ms up to 2200 for context -->
+    <line x1="0" y1="260" x2="700" y2="260" class="axis" />
+    <text x="710" y="264" class="label">ms</text>
+
+    <!-- Bars: scale ms -> px: 700 / 2200 = 0.3182 px/ms -->
+    <!-- pre-tuned: 44 ms -> width px -->
+    <!-- tuned: 43 ms -->
+    <g transform="translate(0,0)">
+      <text x="0" y="0" class="label">Commit (100 files) — Pre-tuned</text>
+      <rect x="0" y="8" width="14" height="24" fill="#60a5fa" rx="3" />
+      <rect x="20" y="8" width="14" height="24" fill="#60a5fa" rx="3" />
+      <rect x="40" y="8" width="14" height="24" fill="#60a5fa" rx="3" />
+      <text x="70" y="24" class="value">44 ms  — 0.44 ms/file</text>
+    </g>
+
+    <g transform="translate(0,60)">
+      <text x="0" y="0" class="label">Commit (100 files) — Tuned</text>
+      <rect x="0" y="8" width="13.7" height="24" fill="#34d399" rx="3" />
+      <text x="70" y="24" class="value">43 ms  — 0.43 ms/file (≈2.3% improvement)</text>
+    </g>
+
+    <g transform="translate(0,130)">
+      <text x="0" y="0" class="label">Baseline Commit (50 files)</text>
+      <rect x="0" y="8" width="11.5" height="18" fill="#93c5fd" rx="3" />
+      <text x="70" y="20" class="value">45 ms  — 0.90 ms/file</text>
+    </g>
+
+    <g transform="translate(0,180)">
+      <text x="0" y="0" class="label">GitZoom Lightning Push (context)</text>
+      <rect x="0" y="8" width="700" height="14" fill="#34d399" rx="3" />
+      <text x="710" y="20" class="value">2160 ms (includes network push & fetch)</text>
+    </g>
+
+    <g transform="translate(0,220)">
+      <text x="0" y="0" class="note">Notes: Values are taken from harness artifacts generated during the session. The tuned run enabled `core.untrackedCache=true` workspace-local and was later restored.</text>
+      <text x="0" y="18" class="note">Improvement from 44 → 43 ms is ~2.27% for the 100-file commit case; results are small but measurable in this environment.</text>
+    </g>
+  </g>
+</svg>
