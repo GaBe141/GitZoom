@@ -11,42 +11,25 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Import shared utilities
+. .\shared-utils.ps1
+
 $Global:StagingResults = @{
     StandardOps = @{}
     StagingOps = @{}
     Improvements = @{}
 }
 
-function Write-StagingLog {
-    param([string]$Message, [string]$Level = "INFO")
-    $timestamp = Get-Date -Format "HH:mm:ss.fff"
-    $color = switch ($Level) {
-        "SUCCESS" { "Green" }
-        "STAGING" { "Yellow" }
-        "CHAMPION" { "Red" }
-        default { "Cyan" }
-    }
-    Write-Host "[$timestamp] STAGING: $Message" -ForegroundColor $color
+# Define color map for this experiment
+$StagingColorMap = @{
+    "SUCCESS" = "Green"
+    "STAGING" = "Yellow"
+    "CHAMPION" = "Red"
+    "INFO" = "Cyan"
 }
 
 function Initialize-StagingChampion {
-    Write-StagingLog "🏆 INITIALIZING STAGING CHAMPION SYSTEM 🏆" "CHAMPION"
-    
-    # Create ultra-optimized workspace for staging
-    $Global:StagingPath = "$env:TEMP\GitZoomStagingChampion"
-    if (Test-Path $Global:StagingPath) {
-        Remove-Item $Global:StagingPath -Recurse -Force
-    }
-    New-Item -Path $Global:StagingPath -ItemType Directory -Force | Out-Null
-    
-    # Optimize directory for Git operations
-    try {
-        $folder = Get-Item $Global:StagingPath
-        $folder.Attributes = $folder.Attributes -bor [System.IO.FileAttributes]::NotContentIndexed
-        Write-StagingLog "Staging champion workspace optimized: $Global:StagingPath" "SUCCESS"
-    } catch {
-        Write-StagingLog "Staging champion workspace created: $Global:StagingPath" "SUCCESS"
-    }
+    $Global:StagingPath = Initialize-ExperimentWorkspace -WorkspaceName "StagingChampion" -Prefix "STAGING" -ColorMap $StagingColorMap
     
     # CHAMPION staging configurations - all proven winners
     $Global:StagingConfigs = @{
@@ -70,59 +53,19 @@ function Initialize-StagingChampion {
         $Global:StagingConfigs["status.showUntrackedFiles"] = "no"
     }
     
-    Write-StagingLog "Staging champion ready with $($Global:StagingConfigs.Count) optimizations" "CHAMPION"
+    Write-ExperimentLog "Staging champion ready with $($Global:StagingConfigs.Count) optimizations" "CHAMPION" "STAGING" $StagingColorMap
 }
 
 function Measure-StandardOperations {
     param([int]$NumFiles)
     
-    Write-StagingLog "📊 Measuring standard operations ($NumFiles files)..." "INFO"
-    
-    $testDir = "$env:TEMP\StagingStandardTest"
-    if (Test-Path $testDir) { Remove-Item $testDir -Recurse -Force }
-    New-Item -Path $testDir -ItemType Directory -Force | Out-Null
-    
-    Push-Location $testDir
-    try {
-        # Standard init
-        $timer = [System.Diagnostics.Stopwatch]::StartNew()
-        git init --quiet 2>$null
-        $timer.Stop()
-        $Global:StagingResults.StandardOps.Init = $timer.ElapsedMilliseconds
-        
-        # Standard file creation - keep it simple to avoid overhead
-        $timer.Restart()
-        1..$NumFiles | ForEach-Object {
-            $content = "File $_ content: $(Get-Random)"
-            [System.IO.File]::WriteAllText("file$_.txt", $content)
-        }
-        $timer.Stop()
-        $Global:StagingResults.StandardOps.FileCreation = $timer.ElapsedMilliseconds
-        
-        # Standard staging - our target for improvement
-        $timer.Restart()
-        git add . 2>$null
-        $timer.Stop()
-        $Global:StagingResults.StandardOps.Staging = $timer.ElapsedMilliseconds
-        
-        # Standard commit
-        $timer.Restart()
-        git commit -m "Standard commit" --quiet 2>$null
-        $timer.Stop()
-        $Global:StagingResults.StandardOps.Commit = $timer.ElapsedMilliseconds
-        
-        Write-StagingLog "Standard operations complete - Staging: $($Global:StagingResults.StandardOps.Staging)ms" "INFO"
-        
-    } finally {
-        Pop-Location
-        if (Test-Path $testDir) { Remove-Item $testDir -Recurse -Force }
-    }
+    Measure-StandardOperations -NumFiles $NumFiles -Prefix "STAGING" -ColorMap $StagingColorMap -Results ([ref]$Global:StagingResults)
 }
 
 function Measure-StagingChampionOperations {
     param([int]$NumFiles)
     
-    Write-StagingLog "🏆 STAGING CHAMPION: Testing with $NumFiles files..." "CHAMPION"
+    Write-ExperimentLog "🏆 STAGING CHAMPION: Testing with $NumFiles files..." "CHAMPION" "STAGING" $StagingColorMap
     
     $testDir = Join-Path $Global:StagingPath "StagingTest"
     New-Item -Path $testDir -ItemType Directory -Force | Out-Null
@@ -151,7 +94,7 @@ function Measure-StagingChampionOperations {
         $Global:StagingResults.StagingOps.FileCreation = $timer.ElapsedMilliseconds
         
         # CHAMPION STAGING - our main event!
-        Write-StagingLog "🎯 CHAMPION STAGING STARTING..." "STAGING"
+        Write-ExperimentLog "🎯 CHAMPION STAGING STARTING..." "STAGING" "STAGING" $StagingColorMap
         $timer.Restart()
         
         # Set all environment variables for MAXIMUM staging performance
@@ -167,7 +110,7 @@ function Measure-StagingChampionOperations {
         $timer.Stop()
         $Global:StagingResults.StagingOps.Staging = $timer.ElapsedMilliseconds
         
-        Write-StagingLog "🏆 CHAMPION STAGING COMPLETE: $($Global:StagingResults.StagingOps.Staging)ms" "CHAMPION"
+        Write-ExperimentLog "🏆 CHAMPION STAGING COMPLETE: $($Global:StagingResults.StagingOps.Staging)ms" "CHAMPION" "STAGING" $StagingColorMap
         
         # CHAMPION commit
         $timer.Restart()
@@ -313,18 +256,18 @@ function Show-StagingChampionResults {
 # Main execution
 switch ($true) {
     $TestStagingChampion {
-        Write-StagingLog "🏆🎯 STARTING STAGING CHAMPIONSHIP 🎯🏆" "CHAMPION"
-        Write-StagingLog "🚀 MISSION: Maximize staging performance for 300%+ overall target" "STAGING"
+        Write-ExperimentLog "🏆🎯 STARTING STAGING CHAMPIONSHIP 🎯🏆" "CHAMPION" "STAGING" $StagingColorMap
+        Write-ExperimentLog "🚀 MISSION: Maximize staging performance for 300%+ overall target" "STAGING" "STAGING" $StagingColorMap
         
         Initialize-StagingChampion
         
-        Write-StagingLog "Testing with $FileCount files, Maximum staging: $MaximizeStaging" "INFO"
+        Write-ExperimentLog "Testing with $FileCount files, Maximum staging: $MaximizeStaging" "INFO" "STAGING" $StagingColorMap
         
         Measure-StandardOperations -NumFiles $FileCount
         Measure-StagingChampionOperations -NumFiles $FileCount
         Show-StagingChampionResults
         
-        Write-StagingLog "Staging championship complete!" "CHAMPION"
+        Write-ExperimentLog "Staging championship complete!" "CHAMPION" "STAGING" $StagingColorMap
     }
     
     default {
