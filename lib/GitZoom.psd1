@@ -72,7 +72,8 @@ NestedModules = @(
     'Staging.ps1',
     'Commit.ps1',
     'ErrorHandling.ps1',
-    'Installation.ps1'
+    'Installation.ps1',
+    'MultiRepo.ps1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -119,7 +120,9 @@ FunctionsToExport = @(
     'Format-ConventionalCommit',
     'Get-CommitScope',
     'Test-CommitMessage',
-    'Invoke-PreCommitValidation'
+    'Invoke-PreCommitValidation',
+    'Invoke-GitFetchAll',
+    'Get-GitStatusAll'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -134,7 +137,9 @@ AliasesToExport = @(
     'gzs',      # Get-GitZoomStatus  
     'gza',      # Add-GitZoomFile
     'gzc',      # Invoke-GitZoomCommit
-    'gzconfig'  # Get-GitZoomConfig
+    'gzconfig', # Get-GitZoomConfig
+    'gzfa',     # Invoke-GitFetchAll
+    'gzsa'      # Get-GitStatusAll
 )
 
 # DSC resources to export from this module
