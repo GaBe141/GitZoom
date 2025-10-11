@@ -6,6 +6,7 @@ export function activate(context: vscode.ExtensionContext) {
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBar.command = 'gitzoom.recommendOptimization';
     statusBar.text = 'GitZoom: scanning...';
+    statusBar.tooltip = 'GitZoom: scanning for staging recommendations';
     statusBar.show();
 
     const runExperiment = vscode.commands.registerCommand('gitzoom.runExperiment', async () => {
@@ -125,7 +126,15 @@ export function activate(context: vscode.ExtensionContext) {
                 const hasUntracked = configs.some((c: string) => c.startsWith('core.untrackedCache='));
                 const hasFscache = configs.some((c: string) => c.startsWith('core.fscache='));
                 const count = (hasUntracked ? 0 : 1) + (hasFscache ? 0 : 1);
-                statusBar.text = `GitZoom: ${count} recs`;
+                if (count === 0) {
+                    statusBar.text = 'GitZoom: no recs';
+                    statusBar.tooltip = 'No low-risk staging recommendations detected';
+                    statusBar.color = undefined;
+                } else {
+                    statusBar.text = `GitZoom: ${count} recs`;
+                    statusBar.tooltip = `${count} low-risk staging recommendation(s). Click to review.`;
+                    statusBar.color = 'yellow';
+                }
             });
         } catch (e) {
             statusBar.text = 'GitZoom: error';
