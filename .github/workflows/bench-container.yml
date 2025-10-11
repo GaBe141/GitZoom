@@ -45,31 +45,35 @@ jobs:
         with:
           name: bench-artifacts-${{ github.sha }}
           path: artifacts/**
+      # publishing is handled in a separate job to avoid evaluating secrets at workflow-parse time
 
-      - name: Optionally publish image to GHCR
-        if: ${{ github.event.inputs.publish == 'true' && secrets.GHCR_TOKEN != '' }}
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+  publish:
+    name: Publish images (manual)
+    needs: build-and-run
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Push image to GHCR (if enabled)
-        if: ${{ github.event.inputs.publish == 'true' && secrets.GHCR_TOKEN != '' }}
+      - name: Publish to GHCR (if GHCR_TOKEN set)
         run: |
+          if [ -z "${{ secrets.GHCR_TOKEN }}" ]; then
+            echo "GHCR_TOKEN not set; skipping GHCR publish"
+            exit 0
+          fi
+          echo "Logging into GHCR"
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           docker tag gitzoom/cli:bench-${{ github.sha }} ghcr.io/${{ github.repository_owner }}/gitzoom/cli:${{ github.sha }}
           docker push ghcr.io/${{ github.repository_owner }}/gitzoom/cli:${{ github.sha }}
 
-      - name: Optionally publish image to Docker Hub
-        if: ${{ github.event.inputs.publish == 'true' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
-        uses: docker/login-action@v2
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Push image to Docker Hub (if enabled)
-        if: ${{ github.event.inputs.publish == 'true' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+      - name: Publish to Docker Hub (if DOCKERHUB creds set)
         run: |
+          if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ] || [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "Docker Hub credentials not set; skipping Docker Hub publish"
+            exit 0
+          fi
+          echo "Logging into Docker Hub"
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           docker tag gitzoom/cli:bench-${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/gitzoom-cli:${{ github.sha }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/gitzoom-cli:${{ github.sha }}
