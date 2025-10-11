@@ -24,6 +24,11 @@
         "command": "gitzoom.recommendOptimization",
         "title": "GitZoom: Recommend Staging Optimization"
       }
+      ,
+      {
+        "command": "gitzoom.openRecommendationsMenu",
+        "title": "GitZoom: Recommendations Menu"
+      }
     ]
     ,
     "configuration": {
