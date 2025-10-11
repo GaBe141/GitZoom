@@ -3,6 +3,10 @@ import { exec } from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
     const output = vscode.window.createOutputChannel('GitZoom Experiments');
+    const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    statusBar.command = 'gitzoom.recommendOptimization';
+    statusBar.text = 'GitZoom: scanning...';
+    statusBar.show();
 
     const runExperiment = vscode.commands.registerCommand('gitzoom.runExperiment', async () => {
         // Auto-discover experiment scripts under the workspace experiments/ folder
@@ -107,6 +111,31 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(recommendOptimization);
+    context.subscriptions.push(statusBar);
+
+    // Helper to update status bar with current recommendation count
+    async function updateStatusBar() {
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+        if (!workspaceRoot) { statusBar.text = 'GitZoom: no workspace'; return; }
+
+        try {
+            exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
+                if (err) { statusBar.text = 'GitZoom: repo error'; return; }
+                const configs = stdout.split(/\r?\n/).filter(Boolean);
+                const hasUntracked = configs.some((c: string) => c.startsWith('core.untrackedCache='));
+                const hasFscache = configs.some((c: string) => c.startsWith('core.fscache='));
+                const count = (hasUntracked ? 0 : 1) + (hasFscache ? 0 : 1);
+                statusBar.text = `GitZoom: ${count} recs`;
+            });
+        } catch (e) {
+            statusBar.text = 'GitZoom: error';
+        }
+    }
+
+    // Update status bar on activation and when workspace changes
+    updateStatusBar();
+    vscode.workspace.onDidChangeWorkspaceFolders(updateStatusBar);
+    vscode.workspace.onDidSaveTextDocument(updateStatusBar);
 }
 
 export function deactivate() {}
