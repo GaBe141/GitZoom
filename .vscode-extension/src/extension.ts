@@ -165,8 +165,10 @@ export function activate(context: vscode.ExtensionContext) {
         const recs = await scanRecommendations(workspaceRoot);
         if (!recs || recs.length === 0) { vscode.window.showInformationMessage('No low-risk recommendations found.'); return; }
 
-        const pickItems = recs.map(r => ({ label: `${r.key} = ${r.value}`, description: r.reason, r }));
-        const choice = await vscode.window.showQuickPick(pickItems.concat([{ label: 'Apply all', description: 'Apply all recommendations' }]), { placeHolder: 'Recommendations' });
+    type RecommendationQuickPickItem = vscode.QuickPickItem & { r?: {key:string,value:string,reason:string} };
+    const pickItems: RecommendationQuickPickItem[] = recs.map(r => ({ label: `${r.key} = ${r.value}`, description: r.reason, r }));
+    const applyAllItem: RecommendationQuickPickItem = { label: 'Apply all', description: 'Apply all recommendations' };
+    const choice = await vscode.window.showQuickPick([...pickItems, applyAllItem], { placeHolder: 'Recommendations' });
         if (!choice) { return; }
 
         if (choice.label === 'Apply all') {
@@ -176,7 +178,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         // Single recommendation action
-        const single = choice.r as {key:string,value:string,reason:string};
+    const single = choice.r;
+    if (!single) { return; }
         const confirm = await vscode.window.showInformationMessage(`Apply ${single.key} = ${single.value}?`, 'Apply', 'Ignore');
         if (confirm !== 'Apply') { return; }
         exec(`git config ${single.key} ${single.value}`, { cwd: workspaceRoot }, (e: any, o: string, se: string) => {
