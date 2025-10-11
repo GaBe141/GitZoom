@@ -1,0 +1,3 @@
+"Name","Iterations","AvgMs","MedianMs","MinMs","MaxMs","AvgMemDelta"
+"GitFetch_Self","1","33.079","33.079","33.079","33.079","4096"
+"NoOp","1","69.1026","69.1026","69.1026","69.1026","8192"

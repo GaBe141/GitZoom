@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "GitFetch_Self",
+    "Iterations": 1,
+    "AvgMs": 33.079,
+    "MedianMs": 33.079,
+    "MinMs": 33.079,
+    "MaxMs": 33.079,
+    "AvgMemDelta": 4096.0,
+    "Details": {
+      "Scenario": "GitFetch_Self",
+      "Iteration": 1,
+      "ElapsedMs": 33.079,
+      "MemBefore": 89866240,
+      "MemAfter": 89870336,
+      "MemDelta": 4096,
+      "Success": false,
+      "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+      "Timestamp": "2025-10-11T21:19:23.8026860+02:00"
+    }
+  },
+  {
+    "Name": "NoOp",
+    "Iterations": 1,
+    "AvgMs": 69.1026,
+    "MedianMs": 69.1026,
+    "MinMs": 69.1026,
+    "MaxMs": 69.1026,
+    "AvgMemDelta": 8192.0,
+    "Details": {
+      "Scenario": "NoOp",
+      "Iteration": 1,
+      "ElapsedMs": 69.1026,
+      "MemBefore": 90689536,
+      "MemAfter": 90697728,
+      "MemDelta": 8192,
+      "Success": true,
+      "Error": null,
+      "Timestamp": "2025-10-11T21:19:23.9109976+02:00"
+    }
+  }
+]

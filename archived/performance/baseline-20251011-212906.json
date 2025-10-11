@@ -1,0 +1,178 @@
+[
+  {
+    "Name": "GitFetch_Self",
+    "Iterations": 3,
+    "AvgMs": 3.1026333333333334,
+    "MedianMs": 1.01,
+    "MinMs": 0.6669,
+    "MaxMs": 7.631,
+    "AvgMemDelta": -91477.33333333333,
+    "Details": [
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 1,
+        "ElapsedMs": 7.631,
+        "MemBefore": 94969856,
+        "MemAfter": 94695424,
+        "MemDelta": -274432,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:05.7887809+02:00"
+      },
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 2,
+        "ElapsedMs": 1.01,
+        "MemBefore": 94834688,
+        "MemAfter": 94834688,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:05.8025174+02:00"
+      },
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 3,
+        "ElapsedMs": 0.6669,
+        "MemBefore": 94834688,
+        "MemAfter": 94834688,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:05.8131545+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "NoOp",
+    "Iterations": 3,
+    "AvgMs": 62.02013333333334,
+    "MedianMs": 53.087,
+    "MinMs": 51.1709,
+    "MaxMs": 81.8025,
+    "AvgMemDelta": 1230165.3333333333,
+    "Details": [
+      {
+        "Scenario": "NoOp",
+        "Iteration": 1,
+        "ElapsedMs": 81.8025,
+        "MemBefore": 94941184,
+        "MemAfter": 98631680,
+        "MemDelta": 3690496,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:05.9149364+02:00"
+      },
+      {
+        "Scenario": "NoOp",
+        "Iteration": 2,
+        "ElapsedMs": 53.087,
+        "MemBefore": 98631680,
+        "MemAfter": 98631680,
+        "MemDelta": 0,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:05.9782731+02:00"
+      },
+      {
+        "Scenario": "NoOp",
+        "Iteration": 3,
+        "ElapsedMs": 51.1709,
+        "MemBefore": 98631680,
+        "MemAfter": 98631680,
+        "MemDelta": 0,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:06.0388065+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "Parallel-Fetch-Demo",
+    "Iterations": 3,
+    "AvgMs": 12.0379,
+    "MedianMs": 1.0854,
+    "MinMs": 0.7367,
+    "MaxMs": 34.2916,
+    "AvgMemDelta": 443733.3333333333,
+    "Details": [
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 1,
+        "ElapsedMs": 34.2916,
+        "MemBefore": 98635776,
+        "MemAfter": 99966976,
+        "MemDelta": 1331200,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.0851065+02:00"
+      },
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 2,
+        "ElapsedMs": 1.0854,
+        "MemBefore": 99975168,
+        "MemAfter": 99975168,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.0984627+02:00"
+      },
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 3,
+        "ElapsedMs": 0.7367,
+        "MemBefore": 99975168,
+        "MemAfter": 99975168,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.1117031+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "Serial-Fetch-Demo",
+    "Iterations": 3,
+    "AvgMs": 5.588533333333333,
+    "MedianMs": 0.8769,
+    "MinMs": 0.4931,
+    "MaxMs": 15.3956,
+    "AvgMemDelta": 1365.3333333333333,
+    "Details": [
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 1,
+        "ElapsedMs": 15.3956,
+        "MemBefore": 99979264,
+        "MemAfter": 99983360,
+        "MemDelta": 4096,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.1381842+02:00"
+      },
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 2,
+        "ElapsedMs": 0.8769,
+        "MemBefore": 99983360,
+        "MemAfter": 99983360,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.1498130+02:00"
+      },
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 3,
+        "ElapsedMs": 0.4931,
+        "MemBefore": 99983360,
+        "MemAfter": 99983360,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.",
+        "Timestamp": "2025-10-11T21:29:06.1604684+02:00"
+      }
+    ]
+  }
+]

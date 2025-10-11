@@ -1,0 +1,178 @@
+[
+  {
+    "Name": "GitFetch_Self",
+    "Iterations": 3,
+    "AvgMs": 3.1855999999999995,
+    "MedianMs": 0.7906,
+    "MinMs": 0.5568,
+    "MaxMs": 8.2094,
+    "AvgMemDelta": -96938.66666666667,
+    "Details": [
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 1,
+        "ElapsedMs": 8.2094,
+        "MemBefore": 94871552,
+        "MemAfter": 94576640,
+        "MemDelta": -294912,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:32.3605707+02:00"
+      },
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 2,
+        "ElapsedMs": 0.7906,
+        "MemBefore": 94711808,
+        "MemAfter": 94715904,
+        "MemDelta": 4096,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:32.3743303+02:00"
+      },
+      {
+        "Scenario": "GitFetch_Self",
+        "Iteration": 3,
+        "ElapsedMs": 0.5568,
+        "MemBefore": 94715904,
+        "MemAfter": 94715904,
+        "MemDelta": 0,
+        "Success": false,
+        "Error": "Cannot bind argument to parameter 'Path' because it is null.",
+        "Timestamp": "2025-10-11T21:29:32.3838856+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "NoOp",
+    "Iterations": 3,
+    "AvgMs": 70.47646666666667,
+    "MedianMs": 68.9876,
+    "MinMs": 64.2153,
+    "MaxMs": 78.2265,
+    "AvgMemDelta": 1227434.6666666667,
+    "Details": [
+      {
+        "Scenario": "NoOp",
+        "Iteration": 1,
+        "ElapsedMs": 78.2265,
+        "MemBefore": 94826496,
+        "MemAfter": 98504704,
+        "MemDelta": 3678208,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:32.4852721+02:00"
+      },
+      {
+        "Scenario": "NoOp",
+        "Iteration": 2,
+        "ElapsedMs": 64.2153,
+        "MemBefore": 98504704,
+        "MemAfter": 98504704,
+        "MemDelta": 0,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:32.5589831+02:00"
+      },
+      {
+        "Scenario": "NoOp",
+        "Iteration": 3,
+        "ElapsedMs": 68.9876,
+        "MemBefore": 98504704,
+        "MemAfter": 98508800,
+        "MemDelta": 4096,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:32.6404198+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "Parallel-Fetch-Demo",
+    "Iterations": 3,
+    "AvgMs": 541.0801666666666,
+    "MedianMs": 562.6595,
+    "MinMs": 450.32,
+    "MaxMs": 610.261,
+    "AvgMemDelta": 2348373.3333333335,
+    "Details": [
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 1,
+        "ElapsedMs": 610.261,
+        "MemBefore": 98508800,
+        "MemAfter": 103411712,
+        "MemDelta": 4902912,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:33.2618651+02:00"
+      },
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 2,
+        "ElapsedMs": 450.32,
+        "MemBefore": 103411712,
+        "MemAfter": 104243200,
+        "MemDelta": 831488,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:33.7223817+02:00"
+      },
+      {
+        "Scenario": "Parallel-Fetch-Demo",
+        "Iteration": 3,
+        "ElapsedMs": 562.6595,
+        "MemBefore": 104251392,
+        "MemAfter": 105562112,
+        "MemDelta": 1310720,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:34.2951444+02:00"
+      }
+    ]
+  },
+  {
+    "Name": "Serial-Fetch-Demo",
+    "Iterations": 3,
+    "AvgMs": 259.57196666666664,
+    "MedianMs": 223.35,
+    "MinMs": 222.647,
+    "MaxMs": 332.7189,
+    "AvgMemDelta": 1198762.6666666667,
+    "Details": [
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 1,
+        "ElapsedMs": 223.35,
+        "MemBefore": 105566208,
+        "MemAfter": 105979904,
+        "MemDelta": 413696,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:34.5303655+02:00"
+      },
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 2,
+        "ElapsedMs": 222.647,
+        "MemBefore": 106020864,
+        "MemAfter": 108867584,
+        "MemDelta": 2846720,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:34.7624277+02:00"
+      },
+      {
+        "Scenario": "Serial-Fetch-Demo",
+        "Iteration": 3,
+        "ElapsedMs": 332.7189,
+        "MemBefore": 108867584,
+        "MemAfter": 109203456,
+        "MemDelta": 335872,
+        "Success": true,
+        "Error": null,
+        "Timestamp": "2025-10-11T21:29:35.1115150+02:00"
+      }
+    ]
+  }
+]
