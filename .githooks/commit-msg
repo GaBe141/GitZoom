@@ -1,0 +1,4 @@
+#!/bin/sh
+# Wrapper to run PowerShell commit-msg hook implementation
+pwsh -NoProfile -ExecutionPolicy Bypass -File "$(git rev-parse --show-toplevel)/.githooks/commit-msg.ps1" "$@"
+exit $?
