@@ -57,7 +57,7 @@ function Invoke-GitFetchAll {
     }
     
     end {
-        Write-Host "🔍 Scanning for Git repositories..." -ForegroundColor Cyan
+        Write-Verbose "🔍 Scanning for Git repositories..."
         
         # Find all Git repositories
         $repositories = @()
@@ -94,8 +94,8 @@ function Invoke-GitFetchAll {
             return
         }
         
-        Write-Host "📦 Found $($repositories.Count) repositories" -ForegroundColor Green
-        Write-Host "⚡ Starting parallel fetch (max $MaxParallel concurrent)..." -ForegroundColor Yellow
+        Write-Information "📦 Found $($repositories.Count) repositories"
+        Write-Verbose "⚡ Starting parallel fetch (max $MaxParallel concurrent)..."
         
         $jobs = @()
         $results = @()
@@ -163,9 +163,9 @@ function Invoke-GitFetchAll {
                 
                 # Display progress
                 if ($result.Success) {
-                    Write-Host "  ✓ $($result.Repository) ($($result.Duration)ms)" -ForegroundColor Green
+                    Write-Information "  ✓ $($result.Repository) ($($result.Duration)ms)"
                 } else {
-                    Write-Host "  ✗ $($result.Repository): $($result.Message)" -ForegroundColor Red
+                    Write-Warning "  ✗ $($result.Repository): $($result.Message)"
                 }
             }
             
@@ -174,12 +174,12 @@ function Invoke-GitFetchAll {
         
         $totalDuration = ((Get-Date) - $startTime).TotalSeconds
         
-        # Summary
-        Write-Host "`n📊 Fetch Summary:" -ForegroundColor Cyan
-        Write-Host "  Total repositories: $($results.Count)" -ForegroundColor White
-        Write-Host "  Successful: $($results | Where-Object Success | Measure-Object | Select-Object -ExpandProperty Count)" -ForegroundColor Green
-        Write-Host "  Failed: $($results | Where-Object { -not $_.Success } | Measure-Object | Select-Object -ExpandProperty Count)" -ForegroundColor Red
-        Write-Host "  Total time: $([math]::Round($totalDuration, 2))s" -ForegroundColor Yellow
+    # Summary
+    Write-Information "`n📊 Fetch Summary:"
+    Write-Information "  Total repositories: $($results.Count)"
+    Write-Information "  Successful: $($results | Where-Object Success | Measure-Object | Select-Object -ExpandProperty Count)"
+    Write-Information "  Failed: $($results | Where-Object { -not $_.Success } | Measure-Object | Select-Object -ExpandProperty Count)"
+    Write-Verbose "  Total time: $([math]::Round($totalDuration, 2))s"
         
         return $results
     }
@@ -237,7 +237,7 @@ function Get-GitStatusAll {
     }
     
     end {
-        Write-Host "🔍 Scanning for Git repositories..." -ForegroundColor Cyan
+    Write-Verbose "🔍 Scanning for Git repositories..."
         
         # Find all Git repositories
         $repositories = @()
@@ -274,8 +274,8 @@ function Get-GitStatusAll {
             return
         }
         
-        Write-Host "📦 Checking status of $($repositories.Count) repositories...`n" -ForegroundColor Green
-        
+    Write-Information "📦 Checking status of $($repositories.Count) repositories...`n"
+
         $statuses = @()
         
         foreach ($repo in $repositories) {
@@ -334,6 +334,7 @@ function Get-GitStatusAll {
                 Pop-Location
                 
             } catch {
+                # Delimit the variable to avoid parser/linter confusion with the following ':' character
                 Write-Warning "Error checking repository ${repo}: $($_.Exception.Message)"
                 Pop-Location
             }
@@ -341,7 +342,7 @@ function Get-GitStatusAll {
         
         # Display results
         if ($statuses.Count -eq 0) {
-            Write-Host "✅ All repositories are clean!" -ForegroundColor Green
+            Write-Information "✅ All repositories are clean!"
             return
         }
         
@@ -351,10 +352,11 @@ function Get-GitStatusAll {
             }
             "List" {
                 foreach ($s in $statuses) {
-                    Write-Host "`n📁 $($s.Repository)" -ForegroundColor Cyan
-                    Write-Host "   Path: $($s.Path)" -ForegroundColor Gray
-                    Write-Host "   Branch: $($s.Branch)" -ForegroundColor Yellow
-                    Write-Host "   Status: $($s.Status)" -ForegroundColor $(if ($s.Status -eq "Clean") { "Green" } else { "Yellow" })
+                    # Display with semantic streams so analyzers can filter
+                    Write-Information "`n📁 $($s.Repository)"
+                    Write-Verbose "   Path: $($s.Path)"
+                    Write-Verbose "   Branch: $($s.Branch)"
+                    if ($s.Status -eq 'Clean') { Write-Information "   Status: $($s.Status)" } else { Write-Warning "   Status: $($s.Status)" }
                 }
             }
             "GridView" {
@@ -362,11 +364,11 @@ function Get-GitStatusAll {
             }
         }
         
-        # Summary
-        Write-Host "`n📊 Summary:" -ForegroundColor Cyan
-        Write-Host "  Total repositories: $($repositories.Count)" -ForegroundColor White
-        Write-Host "  With changes: $($statuses.Count)" -ForegroundColor Yellow
-        Write-Host "  Clean: $(($repositories.Count - $statuses.Count))" -ForegroundColor Green
+    # Summary
+    Write-Information "`n📊 Summary:"
+    Write-Information "  Total repositories: $($repositories.Count)"
+    Write-Information "  With changes: $($statuses.Count)"
+    Write-Information "  Clean: $(($repositories.Count - $statuses.Count))"
         
         return $statuses
     }
