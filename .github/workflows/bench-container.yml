@@ -1,0 +1,35 @@
+name: Bench (containerized)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build GitZoom container
+        run: |
+          docker build -t gitzoom/cli:bench-${{ github.sha }} -f tools/gitzoom-cli/Dockerfile .
+
+      - name: Run measurement harness in container
+        run: |
+          CONTAINER_ID=$(docker create gitzoom/cli:bench-${{ github.sha }})
+          docker cp . $CONTAINER_ID:/workspace
+          docker start -a $CONTAINER_ID || true
+          # copy out artifacts if the harness wrote them to /workspace/artifacts
+          docker cp $CONTAINER_ID:/workspace/artifacts ./artifacts || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-artifacts-${{ github.sha }}
+          path: artifacts/**
