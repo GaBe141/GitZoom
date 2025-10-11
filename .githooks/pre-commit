@@ -1,0 +1,4 @@
+#!/bin/sh
+# Wrapper to run PowerShell pre-commit script on Windows and other platforms
+pwsh -NoProfile -ExecutionPolicy Bypass -File "$(git rev-parse --show-toplevel)/.githooks/pre-commit.ps1" "$@"
+exit $?
