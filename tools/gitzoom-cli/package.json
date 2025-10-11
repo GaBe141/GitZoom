@@ -1,0 +1,13 @@
+{
+  "name": "gitzoom-cli",
+  "version": "0.0.1",
+  "description": "Minimal GitZoom CLI to run experiments and show recommendations",
+  "bin": {
+    "gitzoom": "index.js"
+  },
+  "author": "GitZoom",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12"
+  }
+}
