@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:gitzoom.runExperiment"
+    "onCommand:gitzoom.runExperiment",
+    "onCommand:gitzoom.recommendOptimization"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,6 +19,10 @@
       {
         "command": "gitzoom.runExperiment",
         "title": "GitZoom: Run Experiment"
+      },
+      {
+        "command": "gitzoom.recommendOptimization",
+        "title": "GitZoom: Recommend Staging Optimization"
       }
     ]
   },
