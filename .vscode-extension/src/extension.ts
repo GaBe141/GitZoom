@@ -4,8 +4,8 @@ import { exec } from 'child_process';
 export function activate(context: vscode.ExtensionContext) {
     const output = vscode.window.createOutputChannel('GitZoom Experiments');
     const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    statusBar.command = 'gitzoom.recommendOptimization';
-    statusBar.text = 'GitZoom: scanning...';
+    statusBar.command = 'gitzoom.openRecommendationsMenu';
+    statusBar.text = '$(rocket) GitZoom: scanning...';
     statusBar.tooltip = 'GitZoom: scanning for staging recommendations';
     statusBar.show();
 
@@ -114,28 +114,39 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(recommendOptimization);
     context.subscriptions.push(statusBar);
 
+    // Core recommendation scan function (returns array of recommendations)
+    function scanRecommendations(workspaceRoot: string): Promise<Array<{key:string,value:string,reason:string}>> {
+        return new Promise((resolve, reject) => {
+            exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
+                if (err) { return resolve([]); }
+                const configs = stdout.split(/\r?\n/).filter(Boolean);
+                const hasUntracked = configs.some((c: string) => c.startsWith('core.untrackedCache='));
+                const hasFscache = configs.some((c: string) => c.startsWith('core.fscache='));
+                const recommendations: Array<{key:string,value:string,reason:string}> = [];
+                if (!hasUntracked) { recommendations.push({ key: 'core.untrackedCache', value: 'true', reason: 'Speeds up staging by caching untracked files.' }); }
+                if (!hasFscache) { recommendations.push({ key: 'core.fscache', value: 'true', reason: 'Improves IO performance on supported platforms.' }); }
+                resolve(recommendations);
+            });
+        });
+    }
+
     // Helper to update status bar with current recommendation count
     async function updateStatusBar() {
         const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
         if (!workspaceRoot) { statusBar.text = 'GitZoom: no workspace'; return; }
 
         try {
-            exec('git config --list', { cwd: workspaceRoot }, (err: any, stdout: string, stderr: string) => {
-                if (err) { statusBar.text = 'GitZoom: repo error'; return; }
-                const configs = stdout.split(/\r?\n/).filter(Boolean);
-                const hasUntracked = configs.some((c: string) => c.startsWith('core.untrackedCache='));
-                const hasFscache = configs.some((c: string) => c.startsWith('core.fscache='));
-                const count = (hasUntracked ? 0 : 1) + (hasFscache ? 0 : 1);
-                if (count === 0) {
-                    statusBar.text = 'GitZoom: no recs';
-                    statusBar.tooltip = 'No low-risk staging recommendations detected';
-                    statusBar.color = undefined;
-                } else {
-                    statusBar.text = `GitZoom: ${count} recs`;
-                    statusBar.tooltip = `${count} low-risk staging recommendation(s). Click to review.`;
-                    statusBar.color = 'yellow';
-                }
-            });
+            const recs = await scanRecommendations(workspaceRoot);
+            const count = recs.length;
+            if (count === 0) {
+                statusBar.text = '$(check) GitZoom: no recs';
+                statusBar.tooltip = 'No low-risk staging recommendations detected';
+                statusBar.color = undefined;
+            } else {
+                statusBar.text = `$(warning) GitZoom: ${count} recs`;
+                statusBar.tooltip = `${count} low-risk staging recommendation(s). Click to review.`;
+                statusBar.color = 'yellow';
+            }
         } catch (e) {
             statusBar.text = 'GitZoom: error';
         }
@@ -145,6 +156,36 @@ export function activate(context: vscode.ExtensionContext) {
     updateStatusBar();
     vscode.workspace.onDidChangeWorkspaceFolders(updateStatusBar);
     vscode.workspace.onDidSaveTextDocument(updateStatusBar);
+
+    // Recommendations menu command (shows details and actions)
+    const openRecommendationsMenu = vscode.commands.registerCommand('gitzoom.openRecommendationsMenu', async () => {
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+        if (!workspaceRoot) { vscode.window.showErrorMessage('Open a workspace to view recommendations.'); return; }
+
+        const recs = await scanRecommendations(workspaceRoot);
+        if (!recs || recs.length === 0) { vscode.window.showInformationMessage('No low-risk recommendations found.'); return; }
+
+        const pickItems = recs.map(r => ({ label: `${r.key} = ${r.value}`, description: r.reason, r }));
+        const choice = await vscode.window.showQuickPick(pickItems.concat([{ label: 'Apply all', description: 'Apply all recommendations' }]), { placeHolder: 'Recommendations' });
+        if (!choice) { return; }
+
+        if (choice.label === 'Apply all') {
+            vscode.commands.executeCommand('gitzoom.recommendOptimization');
+            updateStatusBar();
+            return;
+        }
+
+        // Single recommendation action
+        const single = choice.r as {key:string,value:string,reason:string};
+        const confirm = await vscode.window.showInformationMessage(`Apply ${single.key} = ${single.value}?`, 'Apply', 'Ignore');
+        if (confirm !== 'Apply') { return; }
+        exec(`git config ${single.key} ${single.value}`, { cwd: workspaceRoot }, (e: any, o: string, se: string) => {
+            if (e) { vscode.window.showErrorMessage(`Failed to set ${single.key}: ${se || e.message}`); }
+            else { vscode.window.showInformationMessage(`Applied ${single.key} = ${single.value}`); updateStatusBar(); }
+        });
+    });
+
+    context.subscriptions.push(openRecommendationsMenu);
 }
 
 export function deactivate() {}
