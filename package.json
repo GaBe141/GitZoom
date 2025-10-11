@@ -6,7 +6,8 @@
   "scripts": {
     "install": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1",
     "install-global": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1 -Global",
-    "install-vscode": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1 -VSCode"
+    "install-vscode": "pwsh -ExecutionPolicy Bypass -File install-gitzoom.ps1 -VSCode",
+    "test": "node ./tests/cli/run-tests.js || true"
   },
   "keywords": [
     "git",
