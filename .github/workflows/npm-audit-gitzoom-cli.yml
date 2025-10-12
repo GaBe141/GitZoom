@@ -1,0 +1,38 @@
+name: "npm audit — tools/gitzoom-cli"
+
+on:
+  pull_request:
+    paths:
+      - 'tools/gitzoom-cli/**'
+
+jobs:
+  npm-audit:
+    name: npm audit (tools/gitzoom-cli)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install dependencies (production only)
+        working-directory: tools/gitzoom-cli
+        run: |
+          npm ci --omit=dev
+
+      - name: Run npm audit (fail on vulnerabilities)
+        working-directory: tools/gitzoom-cli
+        run: |
+          # Write JSON report (audit returns non-zero exit code when vulnerabilities are found)
+          npm audit --omit=dev --json > audit-report.json || true
+          # If there are vulnerabilities, exit with a non-zero status to fail the job
+          if node -e "const r=require('./audit-report.json'); process.exit(Object.keys(r.advisories||{}).length?1:0)"; then echo 'No vulnerabilities found'; fi
+
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitzoom-cli-audit-report
+          path: tools/gitzoom-cli/audit-report.json
