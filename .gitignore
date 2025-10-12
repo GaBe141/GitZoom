@@ -20,6 +20,11 @@ TestResults.xml
 test-data/
 file*.txt
 
+# VSCode extension build outputs (don't commit node_modules or build artifacts)
+.vscode-extension/node_modules/
+.vscode-extension/out/
+.vscode-extension/*.tgz
+
 # Logs
 *.log
 logs/
