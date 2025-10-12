@@ -73,3 +73,8 @@ PSScriptAnalyzer-report.xml
 *.perf
 performance-results/
 benchmark-results/
+ 
+# Local semgrep virtualenv and reports
+.venv-semg/
+semgrep-results.json
+semgrep-workflows.json
