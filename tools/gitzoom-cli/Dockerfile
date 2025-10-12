@@ -19,16 +19,26 @@ RUN apt-get update \
 ### Runtime stage: slim Node image and drop to non-root user
 FROM node:18-slim
 
-# Create a non-root user
-RUN groupadd --gid 1000 gitzoom && useradd --uid 1000 --gid gitzoom -m gitzoom || true
+# Create a non-root user (idempotent). Try Debian helpers first, fall back to groupadd/useradd.
+RUN set -eux; \
+  if ! id -u gitzoom >/dev/null 2>&1; then \
+    if command -v addgroup >/dev/null 2>&1 && command -v adduser >/dev/null 2>&1; then \
+      addgroup --gid 1000 gitzoom; \
+      adduser --uid 1000 --gid 1000 --disabled-password --gecos "" gitzoom; \
+    else \
+      groupadd -g 1000 gitzoom || true; \
+      useradd -m -u 1000 -g gitzoom -s /bin/sh gitzoom || true; \
+    fi; \
+  fi
 
 WORKDIR /workspace
 
 # Copy only necessary files from builder to keep image small
 COPY --from=builder /src /workspace
 
-# Ensure proper ownership for non-root user
-RUN chown -R gitzoom:gitzoom /workspace
+# Ensure proper ownership for non-root user. If name lookup fails, fall back to numeric uid:gid.
+RUN set -eux; \
+  chown -R gitzoom:gitzoom /workspace 2>/dev/null || chown -R 1000:1000 /workspace
 
 USER gitzoom
 
