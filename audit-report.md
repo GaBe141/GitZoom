@@ -1,0 +1,96 @@
+## Repository Audit Report
+
+Generated: 2025-10-12
+
+### Scope
+- Inventory-only, read‑only audit. Collected: git branch and last commit, untracked files, detected manifests/CI files and a largest-files scan. No installs, builds or tests were run.
+
+### Summary
+- Branch: `test/infrastructure`
+- Last commit: `4764ac0` — fix(docker): create runtime user without forcing numeric IDs to avoid GID conflicts
+- Untracked files seen during inventory:
+  - `.gitzoom/`
+  - `.vscode-extension/out/`
+  - `.vscode-extension/package-lock.json`
+  - `scripts/inventory.ps1` (this audit script)
+
+### Detected manifests & CI
+- Root `package.json`
+- `tools/gitzoom-cli/package.json` and `tools/gitzoom-cli/Dockerfile`
+- A checked-in `.vscode-extension/node_modules/` tree contains many `package.json` files (this is the likely source of large files).
+
+### Large / notable files
+- Files > 5 MB were primarily under `.vscode-extension/node_modules/typescript/lib/` (tsserver, tsc, typescript libs). These are expected artifacts from a Node toolchain but should not normally be committed into source control.
+- `test-data/large-file.txt` exists (about 1 MB) but is not over the 5 MB threshold.
+- Git packfiles appear in `.git/objects/pack/` (normal for any repository with history).
+
+### Observations
+1. There is a checked-in extension with `node_modules` in `.vscode-extension/`. This substantially inflates repository size and risks accidentally committing more generated artifacts.
+2. The repo already contains a `.gitignore` that excludes `file*.txt` and `test-data/`, so those root files are unlikely to be committed, however they still clutter the repository root.
+3. No Python or .NET project manifests were detected (outside of the node toolchain files above).
+
+### Immediate, low-risk recommendations (safe to apply)
+1. Add/ensure `.vscode-extension/node_modules/` is ignored in `.gitignore` to prevent future accidental commits. Example entry:
+
+```
+# VSCode extension build outputs
+.vscode-extension/node_modules/
+.vscode-extension/out/
+.vscode-extension/*.tgz
+```
+
+2. Consider removing the committed `node_modules` contents from `.vscode-extension` and reconstructing them via `npm ci` as part of the extension build procedure. To remove while preserving history, do:
+
+```
+git rm -r --cached .vscode-extension/node_modules
+git commit -m "chore: stop tracking .vscode-extension/node_modules"
+```
+
+3. Move root-level generated/test files (e.g., `file1.txt`… ) into `test-data/legacy/` or `archived/` to declutter the repo root (this preserves the data and keeps history). Example plan below.
+
+4. If CI or packaging requires the `.vscode-extension` artifacts to be present for some reason, instead store built artifacts in a release asset or a dedicated `artifacts/` folder that is ignored and documented.
+
+### Recommended safe next steps I can perform for you
+- Create `test-data/legacy/` and move the root `file*.txt` files there (non-destructive; files preserved under a new folder). I will also add `test-data/legacy/README.md` explaining why they were moved. (Requires write access and will create git changes.)
+- Update `.gitignore` to add `.vscode-extension/node_modules/` and `.vscode-extension/out/` to prevent future commits of the extension's node modules.
+- Create a short `audit-actions.md` describing the changes and how to reverse them.
+
+### Longer-term recommendations
+- Run dependency and vulnerability scans periodically (npm audit / pip-audit / trivy / Snyk / Dependabot). For Node, run `npm ci` then `npm audit --prod` in the relevant folders.
+- Add a CI step to build the extension rather than committing `node_modules` into source control.
+- Run a secrets scan (semgrep / git-secrets / trufflehog) before merges.
+
+### Example commands (PowerShell) to perform the suggested safe changes
+
+Create archive folder and move generated files (non-destructive):
+
+```powershell
+New-Item -ItemType Directory -Path test-data\legacy -Force
+Get-ChildItem -Path . -Filter "file*.txt" -File | Move-Item -Destination test-data\legacy\
+```
+
+Update `.gitignore` (append the recommended lines):
+
+```powershell
+Add-Content -Path .gitignore -Value "`n# VSCode extension build outputs`n.vscode-extension/node_modules/`n.vscode-extension/out/"
+```
+
+Remove cached node_modules from git (if you want to stop tracking them):
+
+```powershell
+git rm -r --cached .vscode-extension/node_modules
+git commit -m "chore: stop tracking .vscode-extension/node_modules"
+```
+
+### Next steps
+Tell me which of the safe next steps above you want me to perform (I can do each one in turn):
+
+- 1) Create `test-data/legacy/` and move `file*.txt` into it.
+- 2) Update `.gitignore` to ignore `.vscode-extension/node_modules/` and related build outputs.
+- 3) Remove `.vscode-extension/node_modules` from git index (will create a commit).
+- 4) Create `test-data/legacy/README.md` and `audit-actions.md` documenting the changes.
+
+If you want me to proceed with any combination, say the numbers (for example: "1 and 2").
+
+---
+Audit generated by repository inventory script `scripts/inventory.ps1`. If you want a deeper scan I can run targeted vulnerability tools (npm audit, pip-audit, trivy) — tell me which ecosystems to enable and I will plan that step.
