@@ -22,12 +22,14 @@ FROM node:18-slim
 # Create a non-root user (idempotent). Try Debian helpers first, fall back to groupadd/useradd.
 RUN set -eux; \
   if ! id -u gitzoom >/dev/null 2>&1; then \
+    # Prefer Debian helpers (addgroup/adduser) without forcing numeric IDs so we avoid GID/UID conflicts.
     if command -v addgroup >/dev/null 2>&1 && command -v adduser >/dev/null 2>&1; then \
-      addgroup --gid 1000 gitzoom; \
-      adduser --uid 1000 --gid 1000 --disabled-password --gecos "" gitzoom; \
+      addgroup gitzoom || true; \
+      adduser --disabled-password --gecos "" --ingroup gitzoom gitzoom || true; \
     else \
-      groupadd -g 1000 gitzoom || true; \
-      useradd -m -u 1000 -g gitzoom -s /bin/sh gitzoom || true; \
+      # Fallback to lower-level tools; avoid forcing numeric IDs to prevent 'GID already in use' errors.
+      groupadd gitzoom || true; \
+      useradd -m -g gitzoom -s /bin/sh gitzoom || true; \
     fi; \
   fi
 
