@@ -1,0 +1,35 @@
+name: Test publish skip behavior
+
+on:
+  workflow_dispatch:
+    inputs:
+      simulate_key:
+        description: 'Set to "present" to simulate a provided NUGET_API_KEY, otherwise leave empty to simulate missing secret.'
+        required: false
+        type: string
+
+jobs:
+  test-skip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Simulate prepare step (write to GITHUB_ENV when simulate_key==present)
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.simulate_key }}" = "present" ]; then
+            echo "NUGET_API_KEY=simulated-value" >> $GITHUB_ENV
+            echo "Wrote simulated NUGET_API_KEY"
+          else
+            echo "No simulated key written"
+          fi
+
+      - name: Simulate publish step (check env at runtime)
+        shell: bash
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "NUGET_API_KEY not set — skipping publish"
+            exit 0
+          fi
+          echo "Would publish with key: $NUGET_API_KEY"
