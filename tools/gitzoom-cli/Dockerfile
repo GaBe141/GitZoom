@@ -33,6 +33,20 @@ RUN set -eux; \
     fi; \
   fi
 
+# Install PowerShell runtime so that the container can execute pwsh-based harness scripts.
+# Keep this in a single RUN to reduce number of layers and clean apt caches after install.
+RUN set -eux; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends ca-certificates curl gnupg apt-transport-https software-properties-common; \
+  # Microsoft package repo and key for PowerShell
+  curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-archive-keyring.gpg; \
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/22.04/prod jammy main" > /etc/apt/sources.list.d/microsoft-prod.list; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends powershell; \
+  apt-get purge -y --auto-remove curl software-properties-common; \
+  apt-get clean; rm -rf /var/lib/apt/lists/* /root/.cache; \
+  pwsh --version
+
 WORKDIR /workspace
 
 # Copy only necessary files from builder to keep image small
