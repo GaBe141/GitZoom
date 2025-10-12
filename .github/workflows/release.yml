@@ -51,7 +51,8 @@ jobs:
   publish:
     runs-on: windows-latest
     needs: validate
-    environment: production
+    # If you use GitHub Environments, ensure 'production' exists in repository settings.
+    environment: 'production'
     
     steps:
     - name: Checkout code
@@ -72,16 +73,11 @@ jobs:
         Write-Host "✅ Updated version to $newVersion"
 
     - name: Publish to PowerShell Gallery
+      if: ${{ secrets.NUGET_API_KEY != '' }}
       shell: pwsh
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        if (-not $env:NUGET_API_KEY) {
-          Write-Host "❌ PowerShell Gallery API key not found!"
-          Write-Host "Please add NUGET_API_KEY to repository secrets"
-          exit 1
-        }
-        
         try {
           Write-Host "📦 Publishing GitZoom to PowerShell Gallery..."
           Publish-Module -Path ./lib -NuGetApiKey $env:NUGET_API_KEY -Verbose
