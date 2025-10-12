@@ -60,10 +60,13 @@ jobs:
     - name: Update version in manifest
       if: github.event_name == 'workflow_dispatch'
       shell: pwsh
+      env:
+        NEW_VERSION: ${{ github.event.inputs.version }}
       run: |
         $manifestPath = "./lib/GitZoom.psd1"
         $content = Get-Content $manifestPath -Raw
-        $newVersion = "${{ github.event.inputs.version }}"
+        # Use environment variable instead of directly interpolating GitHub context in `run:` to avoid injection risks
+        $newVersion = $env:NEW_VERSION
         $content = $content -replace "ModuleVersion\s*=\s*'[\d\.]+'", "ModuleVersion = '$newVersion'"
         Set-Content -Path $manifestPath -Value $content
         Write-Host "✅ Updated version to $newVersion"
