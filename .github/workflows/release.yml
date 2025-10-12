@@ -52,7 +52,8 @@ jobs:
     runs-on: windows-latest
     needs: validate
     # If you use GitHub Environments, ensure 'production' exists in repository settings.
-    environment: 'production'
+    environment:
+      name: production
     
     steps:
     - name: Checkout code
@@ -72,12 +73,26 @@ jobs:
         Set-Content -Path $manifestPath -Value $content
         Write-Host "✅ Updated version to $newVersion"
 
-    - name: Publish to PowerShell Gallery
-      if: ${{ secrets.NUGET_API_KEY != '' }}
+    - name: Prepare NUGET API key (if present)
       shell: pwsh
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
+        # Move secret into GITHUB_ENV only if it's set. Placing the expression inside the shell
+        # avoids using top-level ${{ secrets.* }} expressions which some editors flag.
+        if ('${{ secrets.NUGET_API_KEY }}' -and '${{ secrets.NUGET_API_KEY }}' -ne '') {
+          Write-Host "🔐 NUGET_API_KEY found; adding to GITHUB_ENV"
+          Add-Content -Path $env:GITHUB_ENV -Value "NUGET_API_KEY=${{ secrets.NUGET_API_KEY }}"
+        } else {
+          Write-Host "🔒 NUGET_API_KEY not set; publish will be skipped at runtime if missing."
+        }
+
+    - name: Publish to PowerShell Gallery
+      shell: pwsh
+      run: |
+        if (-not $env:NUGET_API_KEY) {
+          Write-Host "⚠️ NUGET_API_KEY not present in environment — skipping publish step"
+          exit 0
+        }
+
         try {
           Write-Host "📦 Publishing GitZoom to PowerShell Gallery..."
           Publish-Module -Path ./lib -NuGetApiKey $env:NUGET_API_KEY -Verbose
