@@ -9,6 +9,25 @@ Welcome to the GitZoom optimization laboratory! This folder contains advanced ex
 - **Achieve sub-second** local Git operations
 - **Improve error recovery** and user experience
 
+## 📁 Script index (canonical vs optional)
+
+**Canonical / main experiments** – Use these for benchmarking, test data, and optimization runs:
+
+- `performance-benchmark.ps1` – Comprehensive performance tests and reports
+- `windows-advanced-testing.ps1` – Windows-specific tests (NTFS, file attributes, etc.)
+- `windows-test-data-generator.ps1` – Windows test data (paths, attributes, line endings)
+- `continuous-testing.ps1` – Watch/regression/benchmark modes with baselines
+- `test-data-generator.ps1` – Generate small/medium/large test file sets
+- `optimization-experiments.ps1` – Run parallel, caching, and other optimization tests
+- `vscode-optimization.ps1` – Apply or reset VS Code settings and keybindings
+- `gitzoom-vs-git-benchmark.ps1` – Compare GitZoom vs plain Git performance
+- `staging-champion.ps1` – Staging experiments
+
+**Optional / experimental variants** – Alternate implementations, not the main pipeline. Older variants are under `experiments/archive/`:
+
+- **Turbo family:** `archive/adaptive-turbo.ps1`, `archive/extreme-turbo.ps1`, `archive/absolute-final-turbo.ps1`, `archive/production-turbo.ps1`, `archive/ultimate-turbo.ps1`, `archive/focused-turbo.ps1`, `archive/smart-turbo-test.ps1`, `archive/turbo-speed-test.ps1`
+- **RAM/disk:** `archive/turbo-ram-optimization.ps1`, `archive/ram-disk-optimization.ps1`
+
 ## 🧰 Experiment Tools
 
 ### 📊 Performance Benchmarking
@@ -217,9 +236,8 @@ Get-ExecutionPolicy
 - `keybindings.backup.json`: VS Code keybindings backup
 
 ### Test Data
-- `test-data/`: Generated test files for experiments
-- `test-data/nested/`: Complex directory structures
-- `test-data/*.js`, `*.md`, `*.json`: Various file types for testing
+- **Generated test data** lives in `test-data/` at the repo root. This folder is **gitignored**; use `test-data-generator.ps1` or `windows-test-data-generator.ps1` to recreate it. For a small committed sample, use `tests/fixtures/` or `sample-data/` if you add one.
+- Typical layout: `test-data/`, `test-data/nested/`, and various `*.js`, `*.md`, `*.json` files for testing.
 
 ## 🔄 Continuous Improvement
 

@@ -170,6 +170,7 @@ Got ideas? Open an issue with the `enhancement` label!
 - [Installation Guide](docs/INSTALLATION.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Advanced Configuration](docs/ADVANCED.md)
+- [Repository layout](docs/STRUCTURE.md) – Where scripts, configs, and docs live; test outputs and generated data are gitignored (`test-data/`, `test-results/`, `TestResults/`).
 
 ### 🐛 Issues
 Found a bug? [Report it here](https://github.com/GaBe141/GitZoom/issues)
@@ -197,4 +198,4 @@ Special thanks to:
 
 ```
 ⚡ Star us on GitHub if GitZoom made your day faster! ⚡
-```Test performance improvement
+```
