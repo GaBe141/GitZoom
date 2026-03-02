@@ -1,8 +1,8 @@
-# Enhanced GitZoom Lightning Push with Optimization Experiments
+# Enhanced GitZoom Lightning Push - Optimized single-command workflow
 param(
     [string]$message = "Quick update",
-    [switch]$EnableBatchOps,
-    [switch]$EnableParallel,
+    [switch]$EnableBatchOps,    # Kept for backward compatibility (always on now)
+    [switch]$EnableParallel,    # Kept for backward compatibility (no-op)
     [switch]$Verbose
 )
 
@@ -19,107 +19,52 @@ if (-not (Test-Path ".git")) {
 $totalStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
 # ============================================================================
-# OPTIMIZATION 1: BATCH OPERATIONS (Proven 80%+ improvement)
+# STAGING: Single-command add (fastest possible - one git process)
 # ============================================================================
-if ($EnableBatchOps -or (-not $EnableParallel)) {
-    Write-Host "📦 Using optimized batch staging..." -ForegroundColor Yellow
-    
-    # Get all changed files
-    $changedFiles = git status --porcelain | ForEach-Object { $_.Substring(3) }
-    
-    if ($changedFiles.Count -eq 0) {
-        Write-Host "✅ No changes to commit - you're already zoomed!" -ForegroundColor Green
-        exit 0
+Write-Host "📦 Using optimized staging..." -ForegroundColor Yellow
+
+# Quick check: anything to commit?
+$statusOutput = git status --porcelain
+if (-not $statusOutput) {
+    Write-Host "✅ No changes to commit - you're already zoomed!" -ForegroundColor Green
+    exit 0
+}
+
+$stageStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+
+# Single git add -A: stages all changes (new, modified, deleted) in one process call
+# This is faster than multiple type-grouped git add calls
+git add -A
+
+$stageStopwatch.Stop()
+
+# Count staged files from the status output we already captured
+$fileCount = @($statusOutput).Count
+Write-Host "✅ Staged $fileCount files in $($stageStopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
+
+if ($Verbose) {
+    $statusOutput | ForEach-Object {
+        $status = $_.Substring(0, 2).Trim()
+        $file = $_.Substring(3)
+        $label = switch ($status) { "M" {"modified"} "A" {"added"} "D" {"deleted"} "?" {"new"} default {$status} }
+        Write-Host "  $label`: $file" -ForegroundColor Gray
     }
-    
-    # Group files by type for intelligent batching
-    $jsFiles = $changedFiles | Where-Object { $_ -like "*.js" -or $_ -like "*.ts" }
-    $docFiles = $changedFiles | Where-Object { $_ -like "*.md" -or $_ -like "*.txt" }
-    $configFiles = $changedFiles | Where-Object { $_ -like "*.json" -or $_ -like "*.yml" -or $_ -like "*.yaml" }
-    $otherFiles = $changedFiles | Where-Object { 
-        $_ -notlike "*.js" -and $_ -notlike "*.ts" -and 
-        $_ -notlike "*.md" -and $_ -notlike "*.txt" -and
-        $_ -notlike "*.json" -and $_ -notlike "*.yml" -and $_ -notlike "*.yaml"
-    }
-    
-    # Batch stage by file type (much faster than individual staging)
-    $stageStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-    
-    if ($jsFiles) { 
-        git add $jsFiles
-        if ($Verbose) { Write-Host "  Staged $($jsFiles.Count) JavaScript files" -ForegroundColor Gray }
-    }
-    if ($docFiles) { 
-        git add $docFiles
-        if ($Verbose) { Write-Host "  Staged $($docFiles.Count) documentation files" -ForegroundColor Gray }
-    }
-    if ($configFiles) { 
-        git add $configFiles
-        if ($Verbose) { Write-Host "  Staged $($configFiles.Count) configuration files" -ForegroundColor Gray }
-    }
-    if ($otherFiles) { 
-        git add $otherFiles
-        if ($Verbose) { Write-Host "  Staged $($otherFiles.Count) other files" -ForegroundColor Gray }
-    }
-    
-    $stageStopwatch.Stop()
-    Write-Host "✅ Staged $($changedFiles.Count) files in $($stageStopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
-} else {
-    # Standard staging approach
-    Write-Host "📦 Staging all changes..." -ForegroundColor Yellow
-    git add .
 }
 
 # ============================================================================
-# OPTIMIZATION 2: PARALLEL OPERATIONS (Experimental)
+# COMMIT
 # ============================================================================
-if ($EnableParallel) {
-    Write-Host "🔀 Using parallel pre-validation..." -ForegroundColor Yellow
-    
-    # Start background validation while we prepare commit
-    $preValidationJob = Start-Job -ScriptBlock {
-        # Pre-validate remote connectivity
-        git ls-remote --heads origin 2>$null | Out-Null
-        return $LASTEXITCODE
-    }
-    
-    # Commit while validation runs in background
-    Write-Host "💾 Committing changes..." -ForegroundColor Yellow
-    $commitStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-    git commit -m $message
-    $commitStopwatch.Stop()
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "❌ Commit failed!" -ForegroundColor Red
-        Get-Job | Remove-Job -Force
-        exit 1
-    }
-    
-    # Wait for pre-validation to complete
-    $validationResult = Receive-Job $preValidationJob -Wait
-    Remove-Job $preValidationJob
-    
-    if ($validationResult -eq 0) {
-        Write-Host "✅ Remote validation passed" -ForegroundColor Green
-    } else {
-        Write-Host "⚠️ Remote validation failed - proceeding anyway" -ForegroundColor Yellow
-    }
-    
-    Write-Host "✅ Commit completed in $($commitStopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
-} else {
-    # Standard commit approach
-    Write-Host "💾 Committing changes..." -ForegroundColor Yellow
-    $commitStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-    git commit -m $message
-    $commitStopwatch.Stop()
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "❌ Commit failed!" -ForegroundColor Red
-        exit 1
-    }
-    
-    Write-Host "✅ Commit completed in $($commitStopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
+Write-Host "💾 Committing changes..." -ForegroundColor Yellow
+$commitStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+git commit -m $message
+$commitStopwatch.Stop()
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Commit failed!" -ForegroundColor Red
+    exit 1
 }
+
+Write-Host "✅ Commit completed in $($commitStopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
 
 # ============================================================================
 # PUSH TO REMOTE
@@ -150,12 +95,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "  Total Time: $($totalStopwatch.ElapsedMilliseconds)ms" -ForegroundColor White
     Write-Host "  Push Time: $($pushStopwatch.ElapsedMilliseconds)ms" -ForegroundColor White
     
-    if ($EnableBatchOps) {
-        Write-Host "  Batch Operations: ENABLED ✅" -ForegroundColor Green
-    }
-    if ($EnableParallel) {
-        Write-Host "  Parallel Operations: ENABLED ✅" -ForegroundColor Green
-    }
+    Write-Host "  Staging: single-command (git add -A) ✅" -ForegroundColor Green
     
     Write-Host "   Generated by Enhanced GitZoom - https://github.com/GaBe141/GitZoom" -ForegroundColor DarkGray
     

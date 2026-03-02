@@ -4,5 +4,5 @@ param(
     [string]$message = "Quick update"
 )
 
-# Use the enhanced lightning push with batch operations enabled by default
-& "$PSScriptRoot\lightning-push.ps1" -message $message -EnableBatchOps -Verbose
+# Use the enhanced lightning push with optimized single-command staging
+& "$PSScriptRoot\lightning-push.ps1" -message $message -Verbose
