@@ -44,6 +44,7 @@ Project and setup documentation:
 - **ADVANCED.md** – Config locations, production scripts, experiments overview
 - **STRUCTURE.md** – This file
 - **test-data-legacy.md** – Notes on the former test-data/legacy folder
+- **UPLOAD_SPEED_MONITORING_PLAN.md** – How to test and monitor push/upload speeds; baseline and scheduling
 
 ## Test outputs and generated data (gitignored)
 

@@ -1,0 +1,28 @@
+[
+  "[main bd2b7f7] test: lightning push benchmark",
+  " 21 files changed, 341 insertions(+), 6 deletions(-)",
+  " create mode 100644 docs/ADVANCED.md",
+  " create mode 100644 docs/INSTALLATION.md",
+  " create mode 100644 docs/STRUCTURE.md",
+  " create mode 100644 docs/TROUBLESHOOTING.md",
+  " create mode 100644 docs/test-data-legacy.md",
+  " create mode 100644 experiments/archive/README.md",
+  " rename experiments/{ => archive}/absolute-final-turbo.ps1 (100%)",
+  " rename experiments/{ => archive}/adaptive-turbo.ps1 (100%)",
+  " rename experiments/{ => archive}/extreme-turbo.ps1 (100%)",
+  " rename experiments/{ => archive}/focused-turbo.ps1 (100%)",
+  " rename experiments/{ => archive}/production-turbo.ps1 (100%)",
+  " rename experiments/{ => archive}/ram-disk-optimization.ps1 (100%)",
+  " rename experiments/{ => archive}/smart-turbo-test.ps1 (100%)",
+  " rename experiments/{ => archive}/turbo-ram-optimization.ps1 (100%)",
+  " rename experiments/{ => archive}/turbo-speed-test.ps1 (100%)",
+  " rename experiments/{ => archive}/ultimate-turbo.ps1 (100%)",
+  " create mode 100644 experiments/performance-report-20260213-201958.json",
+  {
+    "Operation": "GitZoom Lightning Push",
+    "Duration": 2456,
+    "Success": true,
+    "TestData": "Single file change",
+    "Timestamp": "2026-02-13T20:20:22.5585886+01:00"
+  }
+]

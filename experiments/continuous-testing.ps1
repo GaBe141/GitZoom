@@ -173,6 +173,16 @@ function Invoke-CorePerformanceTests {
         }
     }
     
+    # Test 7: Git Fetch (network)
+    $testResults += Measure-GitZoomOperation "Git Fetch" {
+        git fetch origin 2>$null
+    }
+    
+    # Test 8: Git Push (network; "Everything up-to-date" still exits 0)
+    $testResults += Measure-GitZoomOperation "Git Push" {
+        git push origin $(git branch --show-current) 2>$null
+    }
+    
     return $testResults
 }
 
