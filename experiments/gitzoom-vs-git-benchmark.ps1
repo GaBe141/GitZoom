@@ -9,13 +9,13 @@ param(
     [string]$OutputPath = "performance-comparison"
 )
 
-# Import required modules
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
+# Import Windows-only modules (non-fatal on Linux)
+try { Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop } catch { }
+try { Add-Type -AssemblyName System.Drawing -ErrorAction Stop } catch { }
 
 Write-Host "⚡ GitZoom vs Standard Git Performance Comparison" -ForegroundColor Magenta
 Write-Host "=" * 70 -ForegroundColor Gray
-Write-Host "Proving GitZoom's superior performance on Windows" -ForegroundColor Yellow
+Write-Host "Benchmarking GitZoom optimizations against standard Git workflows" -ForegroundColor Yellow
 Write-Host ""
 
 # Global comparison results
@@ -215,144 +215,140 @@ module.exports = TestClass$_;
         $content | Out-File "test-file-$_.js" -Encoding UTF8
     }
     
-    # Create an initial commit
-    git add . --quiet
+    # Create an initial commit so HEAD exists for subsequent resets
+    git add .
     git commit -m "Initial test data" --quiet
     
     Write-Host "✅ Generated $($currentScale.FileCount) test files" -ForegroundColor Green
 }
 
 function Test-AddAndCommitPerformance {
-    Write-TestHeader "Add and Commit Performance" "Testing file staging and commit operations"
+    Write-TestHeader "Add and Commit Performance" "GitZoom batch add vs individual file adds"
     
-    # Create a test change
-    "Modified content $(Get-Date)" | Out-File "test-file-1.js" -Append -Encoding UTF8
-    
-    # Test GitZoom Lightning Push
-    $gitZoomResult = Measure-Operation "GitZoom Lightning Commit" {
-        & "../../scripts/lightning-push.ps1" -message "GitZoom test commit" 2>$null
+    # GitZoom approach: batch add all files at once, then commit
+    $gitZoomResult = Measure-Operation "GitZoom Batch Add + Commit" {
+        # Create modifications for this iteration
+        1..5 | ForEach-Object { "change $_" >> "test-file-$_.js" }
+        git add -A
+        git commit -m "GitZoom batch commit" --quiet
     } "GitZoom"
     
-    # Reset for standard git test
-    git reset --hard HEAD~1 --quiet
-    "Modified content $(Get-Date)" | Out-File "test-file-1.js" -Append -Encoding UTF8
-    
-    # Test standard git operations
-    $standardResult = Measure-Operation "Standard Git Add + Commit" {
-        git add test-file-1.js
-        git commit -m "Standard git test commit" --quiet
+    # Standard approach: add files one by one, then commit
+    $standardResult = Measure-Operation "Standard Git Individual Add + Commit" {
+        # Create modifications for this iteration
+        1..5 | ForEach-Object { "change $_" >> "test-file-$_.js" }
+        1..5 | ForEach-Object { git add "test-file-$_.js" }
+        git commit -m "Standard individual commit" --quiet
     } "Standard Git"
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "Add and Commit"
 }
 
 function Test-StatusCheckPerformance {
-    Write-TestHeader "Status Check Performance" "Testing git status operations"
+    Write-TestHeader "Status Check Performance" "GitZoom parsed status vs standard verbose status"
     
-    # Create several modified files
+    # Create several modified files to have something to report
     1..5 | ForEach-Object {
         "Status test modification $_" | Out-File "test-file-$_.js" -Append -Encoding UTF8
     }
     
-    # Test GitZoom status (if we have optimized status checking)
-    $gitZoomResult = Measure-Operation "GitZoom Status Check" {
-        git status --porcelain
+    # GitZoom approach: porcelain (machine-parseable, minimal output)
+    $gitZoomResult = Measure-Operation "GitZoom Porcelain Status" {
+        git status --porcelain --branch
     } "GitZoom"
     
-    # Test standard git status
-    $standardResult = Measure-Operation "Standard Git Status" {
-        git status --porcelain
+    # Standard approach: full verbose status (what users normally run)
+    $standardResult = Measure-Operation "Standard Git Full Status" {
+        git status
     } "Standard Git"
+    
+    # Clean up modifications
+    git checkout -- . 2>$null
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "Status Check"
 }
 
 function Test-MultiFileCommitPerformance {
-    Write-TestHeader "Multi-File Commit Performance" "Testing bulk file operations"
+    Write-TestHeader "Multi-File Commit Performance" "GitZoom single-command vs multi-step manual workflow"
     
-    # Reset repository
-    git reset --hard HEAD --quiet
-    git clean -fd --quiet
-    
-    # Create multiple file changes
-    1..10 | ForEach-Object {
-        "Bulk modification $_ $(Get-Date)" | Out-File "bulk-test-$_.js" -Encoding UTF8
-    }
-    
-    # Test GitZoom bulk operations
-    $gitZoomResult = Measure-Operation "GitZoom Bulk Commit" {
-        & "../../scripts/lightning-push.ps1" -message "GitZoom bulk commit test" 2>$null
+    # GitZoom approach: single git add -A for all files
+    $gitZoomResult = Measure-Operation "GitZoom Single-Command Commit" {
+        1..20 | ForEach-Object {
+            "Bulk mod $_" | Out-File "bulk-test-$_.js" -Encoding UTF8
+        }
+        git add -A
+        git commit -m "GitZoom bulk commit" --quiet
     } "GitZoom"
     
-    # Reset for standard git test
-    git reset --hard HEAD~1 --quiet
-    1..10 | ForEach-Object {
-        "Bulk modification $_ $(Get-Date)" | Out-File "bulk-test-$_.js" -Encoding UTF8
-    }
-    
-    # Test standard git bulk operations
-    $standardResult = Measure-Operation "Standard Git Bulk Commit" {
-        git add .
-        git commit -m "Standard bulk commit test" --quiet
+    # Standard approach: add files individually then commit
+    $standardResult = Measure-Operation "Standard Git Multi-Step Commit" {
+        1..20 | ForEach-Object {
+            "Bulk mod $_" | Out-File "bulk-test-$_.js" -Encoding UTF8
+        }
+        1..20 | ForEach-Object { git add "bulk-test-$_.js" }
+        git commit -m "Standard bulk commit" --quiet
     } "Standard Git"
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "Multi-File Commit"
 }
 
 function Test-LogAndHistoryPerformance {
-    Write-TestHeader "Log and History Performance" "Testing git log operations"
+    Write-TestHeader "Log and History Performance" "GitZoom compact log vs standard verbose log"
     
     # Create some commit history first
     1..5 | ForEach-Object {
         "History test $_" | Out-File "history-$_.txt" -Encoding UTF8
-        git add "history-$_.txt" --quiet
+        git add "history-$_.txt"
         git commit -m "History commit $_" --quiet
     }
     
-    # Test GitZoom log operations
-    $gitZoomResult = Measure-Operation "GitZoom Log Check" {
-        git log --oneline -10
+    # GitZoom approach: compact one-line format
+    $gitZoomResult = Measure-Operation "GitZoom Compact Log" {
+        git log --oneline -20
     } "GitZoom"
     
-    # Test standard git log
-    $standardResult = Measure-Operation "Standard Git Log" {
-        git log --oneline -10
+    # Standard approach: full verbose log with diff stats
+    $standardResult = Measure-Operation "Standard Git Verbose Log" {
+        git log --stat -20
     } "Standard Git"
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "Log and History"
 }
 
 function Test-BranchOperationPerformance {
-    Write-TestHeader "Branch Operation Performance" "Testing branch creation and switching"
+    Write-TestHeader "Branch Operation Performance" "GitZoom single-command branch vs multi-step"
     
-    # Test GitZoom branch operations
-    $gitZoomResult = Measure-Operation "GitZoom Branch Operations" {
-        git checkout -b "gitzoom-test-branch" --quiet
-        git checkout main --quiet
-        git branch -d "gitzoom-test-branch" --quiet
+    # GitZoom approach: single checkout -b (what New-GitBranch does)
+    $gitZoomResult = Measure-Operation "GitZoom Quick Branch" {
+        git checkout -b "gitzoom-test-$((Get-Random))" --quiet 2>$null
+        git checkout main --quiet 2>$null
     } "GitZoom"
     
-    # Test standard git branch operations
-    $standardResult = Measure-Operation "Standard Branch Operations" {
-        git checkout -b "standard-test-branch" --quiet
-        git checkout main --quiet
-        git branch -d "standard-test-branch" --quiet
+    # Standard approach: create branch then switch separately
+    $standardResult = Measure-Operation "Standard Git Branch + Switch" {
+        $name = "standard-test-$((Get-Random))"
+        git branch $name 2>$null
+        git checkout $name --quiet 2>$null
+        git checkout main --quiet 2>$null
     } "Standard Git"
+    
+    # Cleanup test branches
+    git branch | Where-Object { $_ -match "test-" } | ForEach-Object { git branch -D $_.Trim() 2>$null }
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "Branch Operations"
 }
 
 function Test-FileSystemScanPerformance {
-    Write-TestHeader "File System Scan Performance" "Testing file discovery and scanning"
+    Write-TestHeader "File System Scan Performance" "GitZoom git-native scan vs PowerShell filesystem scan"
     
-    # Test GitZoom file scanning (optimized PowerShell)
-    $gitZoomResult = Measure-Operation "GitZoom File Scan" {
-        Get-ChildItem -Path . -Recurse -File | Where-Object { $_.Extension -eq ".js" } | Measure-Object
+    # GitZoom approach: use git ls-files (tracks index, very fast)
+    $gitZoomResult = Measure-Operation "GitZoom git ls-files" {
+        git ls-files "*.js"
     } "GitZoom"
     
-    # Test standard file scanning
-    $standardResult = Measure-Operation "Standard File Scan" {
-        Get-ChildItem -Path . -File -Filter "*.js" | Measure-Object
+    # Standard approach: PowerShell recursive filesystem scan
+    $standardResult = Measure-Operation "Standard Filesystem Scan" {
+        Get-ChildItem -Path . -Recurse -File | Where-Object { $_.Extension -eq ".js" } | ForEach-Object { $_.FullName }
     } "Standard Git"
     
     Compare-Operations -GitZoomResult $gitZoomResult -StandardResult $standardResult -TestName "File System Scan"
@@ -387,9 +383,9 @@ function New-ComparisonReport {
         }
         DetailedResults = $global:ComparisonResults
         SystemInfo = @{
-            OS = (Get-CimInstance Win32_OperatingSystem).Caption
-            ProcessorName = (Get-CimInstance Win32_Processor).Name
-            TotalMemory = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 2)
+            OS = if ($IsWindows) { try { (Get-CimInstance Win32_OperatingSystem).Caption } catch { "Windows" } } else { "$(uname -s) $(uname -r)" }
+            ProcessorName = if ($IsWindows) { try { (Get-CimInstance Win32_Processor).Name } catch { "Unknown" } } else { "$(uname -m)" }
+            TotalMemory = if ($IsWindows) { try { [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 2) } catch { 0 } } else { try { [math]::Round((Get-Content /proc/meminfo | Select-String "MemTotal" | ForEach-Object { ($_ -split '\s+')[1] }) / 1048576, 2) } catch { 0 } }
             PowerShellVersion = $PSVersionTable.PSVersion.ToString()
         }
     }

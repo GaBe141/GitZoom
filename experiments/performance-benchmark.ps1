@@ -5,11 +5,12 @@ param(
     [switch]$GenerateReport
 )
 
-# Import required modules
-Add-Type -AssemblyName System.Windows.Forms
+# Import Windows-only modules (non-fatal on Linux)
+try { Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop } catch { }
 
 Write-Host "🧪 GitZoom Performance Benchmarker" -ForegroundColor Magenta
 Write-Host "=" * 50 -ForegroundColor Gray
+Write-Host "Running $Iterations iteration(s) per operation" -ForegroundColor Gray
 
 # Performance tracking
 $results = @()
@@ -18,38 +19,64 @@ function Measure-GitOperation {
     param(
         [string]$OperationName,
         [scriptblock]$Operation,
-        [string]$TestData = ""
+        [string]$TestData = "",
+        [scriptblock]$Setup = $null
     )
     
-    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $durations = @()
+    $failures = 0
     
-    try {
-        & $Operation
-        $stopwatch.Stop()
+    for ($i = 1; $i -le $Iterations; $i++) {
+        # Run optional per-iteration setup (not timed)
+        if ($Setup) { try { & $Setup } catch { } }
+        
+        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        try {
+            & $Operation | Out-Null
+            $stopwatch.Stop()
+            $durations += $stopwatch.ElapsedMilliseconds
+        }
+        catch {
+            $stopwatch.Stop()
+            $failures++
+        }
+    }
+    
+    if ($durations.Count -gt 0) {
+        $avg = [math]::Round(($durations | Measure-Object -Average).Average, 2)
+        $min = ($durations | Measure-Object -Minimum).Minimum
+        $max = ($durations | Measure-Object -Maximum).Maximum
+        $stddev = if ($durations.Count -gt 1) {
+            [math]::Round([math]::Sqrt(($durations | ForEach-Object { [math]::Pow($_ - $avg, 2) } | Measure-Object -Average).Average), 2)
+        } else { 0 }
         
         $result = [PSCustomObject]@{
             Operation = $OperationName
-            Duration = $stopwatch.ElapsedMilliseconds
+            Duration = $avg
+            MinDuration = $min
+            MaxDuration = $max
+            StdDev = $stddev
+            Iterations = $durations.Count
+            Failures = $failures
             Success = $true
             TestData = $TestData
             Timestamp = Get-Date
         }
         
-        Write-Host "✅ $OperationName`: $($stopwatch.ElapsedMilliseconds)ms" -ForegroundColor Green
+        Write-Host "✅ $OperationName`: avg ${avg}ms (min=${min}, max=${max}, ±${stddev}ms, ${($durations.Count)}/${Iterations} ok)" -ForegroundColor Green
     }
-    catch {
-        $stopwatch.Stop()
-        
+    else {
         $result = [PSCustomObject]@{
             Operation = $OperationName
-            Duration = $stopwatch.ElapsedMilliseconds
+            Duration = 0
             Success = $false
-            Error = $_.Exception.Message
+            Iterations = 0
+            Failures = $failures
             TestData = $TestData
             Timestamp = Get-Date
         }
         
-        Write-Host "❌ $OperationName`: Failed after $($stopwatch.ElapsedMilliseconds)ms" -ForegroundColor Red
+        Write-Host "❌ $OperationName`: All $Iterations iterations failed" -ForegroundColor Red
     }
     
     return $result

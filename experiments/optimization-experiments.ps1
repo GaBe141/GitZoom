@@ -186,12 +186,9 @@ function Test-PredictiveStaging {
     Write-Host "`n📊 Testing Manual Staging..." -ForegroundColor Yellow
     $stopwatch1 = [System.Diagnostics.Stopwatch]::StartNew()
     
-    # Simulate user thinking time and individual adds
-    Start-Sleep -Milliseconds 500  # User decision time
+    # Individual file adds (one git process per file)
     git add test-data/config.js
-    Start-Sleep -Milliseconds 300  # User decision time
     git add test-data/README.md
-    Start-Sleep -Milliseconds 200  # User decision time
     git add test-data/package.json
     
     $stopwatch1.Stop()
@@ -209,10 +206,10 @@ function Test-PredictiveStaging {
     $docFiles = Get-ChildItem test-data -Filter "*.md"
     $configFiles = Get-ChildItem test-data -Filter "*.json"
     
-    # Batch by file type (faster)
-    if ($jsFiles) { git add ($jsFiles.FullName -join " ") }
-    if ($docFiles) { git add ($docFiles.FullName -join " ") }
-    if ($configFiles) { git add ($configFiles.FullName -join " ") }
+    # Batch by file type (faster) - pass as array, not joined string
+    if ($jsFiles) { git add @($jsFiles.FullName) }
+    if ($docFiles) { git add @($docFiles.FullName) }
+    if ($configFiles) { git add @($configFiles.FullName) }
     
     $stopwatch2.Stop()
     $predictiveTime = $stopwatch2.ElapsedMilliseconds
