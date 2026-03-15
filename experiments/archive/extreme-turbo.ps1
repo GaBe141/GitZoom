@@ -1,3 +1,4 @@
+#Requires -Version 7.0
 # GitZoom EXTREME TURBO - Push to 300%+ Target
 # APPROACH: Aggressive optimizations targeting the 80% staging success
 # STRATEGY: Eliminate every possible bottleneck, focus on staging/commit gains
@@ -210,6 +211,16 @@ function Measure-ExtremeOperations {
         
     } finally {
         Pop-Location
+        Remove-Item Env:GIT_INDEX_VERSION -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_OPTIONAL_LOCKS -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_FLUSH -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_CONFIG_NOSYSTEM -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_NAME -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_EMAIL -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_NAME -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_EMAIL -ErrorAction SilentlyContinue
     }
 }
 

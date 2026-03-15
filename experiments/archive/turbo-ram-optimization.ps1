@@ -1,3 +1,4 @@
+#Requires -Version 7.0
 # GitZoom TURBO RAM-Disk Optimization - Advanced Memory Operations
 # TARGET: 300%+ performance improvement through memory-mapped Git operations
 # APPROACH: Direct memory manipulation for ultra-fast Git operations
@@ -43,7 +44,7 @@ function New-MemoryMappedGitOperations {
         # Create memory-mapped file for ultra-fast operations
         $mmfSize = $SizeMB * 1024 * 1024
         $Global:MemoryMappedFile = [System.IO.MemoryMappedFiles.MemoryMappedFile]::CreateNew("GitZoomTurbo", $mmfSize)
-        $Global:MemoryMappedAccessor = $Global:MemoryMappedFile.CreateAccessor()
+        $Global:MemoryMappedAccessor = $Global:MemoryMappedFile.CreateViewAccessor()
         
         Write-TurboLog "Memory-mapped file created: ${SizeMB}MB" "SUCCESS"
         
@@ -305,43 +306,44 @@ function Remove-TurboResources {
 }
 
 # Main execution
-switch ($true) {
-    $CreateMemoryDisk {
-        Write-TurboLog "🚀🚀🚀 CREATING TURBO MEMORY SYSTEM 🚀🚀🚀" "TURBO"
-        if (New-MemoryMappedGitOperations -SizeMB $MemorySize) {
-            Write-TurboLog "Turbo system ready! Use -TestTurboPerformance to benchmark." "SUCCESS"
-        }
-    }
-    
-    $TestTurboPerformance {
-        if (-not $Global:MemoryMappedFile) {
-            Write-TurboLog "Creating turbo system for performance test..." "INFO"
-            New-MemoryMappedGitOperations -SizeMB $MemorySize | Out-Null
+try {
+    switch ($true) {
+        $CreateMemoryDisk {
+            Write-TurboLog "🚀🚀🚀 CREATING TURBO MEMORY SYSTEM 🚀🚀🚀" "TURBO"
+            if (New-MemoryMappedGitOperations -SizeMB $MemorySize) {
+                Write-TurboLog "Turbo system ready! Use -TestTurboPerformance to benchmark." "SUCCESS"
+            }
         }
         
-        Write-TurboLog "🔥🔥🔥 STARTING TURBO PERFORMANCE TEST 🔥🔥🔥" "TURBO"
+        $TestTurboPerformance {
+            if (-not $Global:MemoryMappedFile) {
+                Write-TurboLog "Creating turbo system for performance test..." "INFO"
+                New-MemoryMappedGitOperations -SizeMB $MemorySize | Out-Null
+            }
+            
+            Write-TurboLog "🔥🔥🔥 STARTING TURBO PERFORMANCE TEST 🔥🔥🔥" "TURBO"
+            
+            Measure-StandardPerformance
+            Measure-TurboPerformance
+            Show-TurboResults
+            
+            Write-TurboLog "Performance test complete!" "SUCCESS"
+        }
         
-        Measure-StandardPerformance
-        Measure-TurboPerformance
-        Show-TurboResults
-        
-        Write-TurboLog "Performance test complete!" "SUCCESS"
+        default {
+            Write-Host "🚀 GitZoom TURBO RAM-Disk Optimization 🚀" -ForegroundColor Yellow
+            Write-Host "========================================" -ForegroundColor Yellow
+            Write-Host "Usage:" -ForegroundColor Cyan
+            Write-Host "  -CreateMemoryDisk      Create turbo memory-mapped system" -ForegroundColor White
+            Write-Host "  -TestTurboPerformance  Run comprehensive turbo benchmark" -ForegroundColor White
+            Write-Host "  -MemorySize <MB>       Memory allocation (default: 512MB)" -ForegroundColor White
+            Write-Host "  -Verbose               Show detailed operations" -ForegroundColor White
+            Write-Host ""
+            Write-Host "Example: .\turbo-ram-optimization.ps1 -TestTurboPerformance" -ForegroundColor Green
+            Write-Host ""
+            Write-Host "🎯 TARGET: 300%+ performance improvement" -ForegroundColor Yellow
+        }
     }
-    
-    default {
-        Write-Host "🚀 GitZoom TURBO RAM-Disk Optimization 🚀" -ForegroundColor Yellow
-        Write-Host "========================================" -ForegroundColor Yellow
-        Write-Host "Usage:" -ForegroundColor Cyan
-        Write-Host "  -CreateMemoryDisk      Create turbo memory-mapped system" -ForegroundColor White
-        Write-Host "  -TestTurboPerformance  Run comprehensive turbo benchmark" -ForegroundColor White
-        Write-Host "  -MemorySize <MB>       Memory allocation (default: 512MB)" -ForegroundColor White
-        Write-Host "  -Verbose               Show detailed operations" -ForegroundColor White
-        Write-Host ""
-        Write-Host "Example: .\turbo-ram-optimization.ps1 -TestTurboPerformance" -ForegroundColor Green
-        Write-Host ""
-        Write-Host "🎯 TARGET: 300%+ performance improvement" -ForegroundColor Yellow
-    }
+} finally {
+    Remove-TurboResources
 }
-
-# Cleanup on script exit
-Register-EngineEvent PowerShell.Exiting -Action { Remove-TurboResources }

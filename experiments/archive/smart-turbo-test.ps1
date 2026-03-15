@@ -1,3 +1,4 @@
+#Requires -Version 7.0
 # GitZoom SMART TURBO Optimization - Adaptive Performance
 # TARGET: 300%+ improvement through intelligent optimization selection
 # APPROACH: Adaptive algorithms + Smart caching + Optimal Git configurations
@@ -190,6 +191,10 @@ function Invoke-SmartTurboBenchmark {
         
     } finally {
         Pop-Location
+        Remove-Item Env:GIT_INDEX_VERSION -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_OPTIONAL_LOCKS -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
     }
 }
 
@@ -265,6 +270,12 @@ function Invoke-BatchOperationsBenchmark {
         
     } finally {
         Pop-Location
+        Remove-Item Env:GIT_INDEX_VERSION -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_OPTIONAL_LOCKS -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_FLUSH -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_CONFIG_NOSYSTEM -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
     }
 }
 
