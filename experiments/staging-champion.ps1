@@ -183,6 +183,13 @@ function Measure-StagingChampionOperations {
         
     } finally {
         Pop-Location
+        Remove-Item Env:GIT_INDEX_VERSION -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_OPTIONAL_LOCKS -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_FLUSH -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_CONFIG_NOSYSTEM -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_CONFIG_NOGLOBAL -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
     }
 }
 

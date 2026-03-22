@@ -30,7 +30,8 @@
   },
   "homepage": "https://github.com/GaBe141/GitZoom#readme",
   "engines": {
-    "powershell": ">=5.1"
+    "powershell": ">=7.0",
+    "git": ">=2.28"
   },
   "os": [
     "win32"

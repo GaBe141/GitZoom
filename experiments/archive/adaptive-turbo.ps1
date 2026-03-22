@@ -1,3 +1,4 @@
+#Requires -Version 7.0
 # GitZoom ADAPTIVE TURBO - Smart Performance Based on Learned Patterns
 # STRATEGY: Use insights from testing to create the optimal approach
 # KEY INSIGHT: 80% staging improvement is our goldmine - exploit it!
@@ -231,6 +232,10 @@ function Measure-AdaptiveOperations {
         
     } finally {
         Pop-Location
+        Remove-Item Env:GIT_INDEX_VERSION -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_OPTIONAL_LOCKS -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_AUTHOR_DATE -ErrorAction SilentlyContinue
+        Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
     }
 }
 
